@@ -26,6 +26,7 @@ interface TreatmentPanelProps {
   conditionLabel: string;
   plan: TreatmentPlan;
   dataOcidPrefix: string;
+  patientName?: string;
 }
 
 const TYPE_BADGE: Record<string, { label: string; className: string }> = {
@@ -43,7 +44,11 @@ const TYPE_BADGE: Record<string, { label: string; className: string }> = {
   },
 };
 
-function downloadPrescription(conditionLabel: string, plan: TreatmentPlan) {
+function downloadPrescription(
+  conditionLabel: string,
+  plan: TreatmentPlan,
+  patientName?: string,
+) {
   const date = new Date().toLocaleDateString("en-IN", {
     day: "2-digit",
     month: "long",
@@ -93,7 +98,7 @@ function downloadPrescription(conditionLabel: string, plan: TreatmentPlan) {
     .header p { font-size: 13px; margin-top: 4px; opacity: 0.9; }
     .header .reg { font-size: 12px; margin-top: 2px; opacity: 0.75; }
     .body { padding: 28px 32px; }
-    .meta { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 13px; color: #374151; }
+    .meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; font-size: 13px; color: #374151; }
     .meta .label { font-weight: 600; color: #166534; }
     .rx { font-size: 32px; font-weight: 700; color: #166534; font-style: italic; margin-bottom: 12px; }
     .section-title { font-size: 14px; font-weight: 700; color: #166534; border-bottom: 2px solid #166534; padding-bottom: 4px; margin: 18px 0 10px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -129,10 +134,11 @@ function downloadPrescription(conditionLabel: string, plan: TreatmentPlan) {
   </div>
   <div class="body">
     <div class="meta">
+      <div><span class="label">Patient:</span> ${patientName || "\u2014"}</div>
       <div><span class="label">Date:</span> ${date}</div>
       <div><span class="label">Diagnosis:</span> ${conditionLabel}</div>
     </div>
-    <div class="rx">℞</div>
+    <div class="rx">&#8478;</div>
 
     <div class="section-title">Internal Medicines</div>
     <table>
@@ -205,6 +211,7 @@ export function TreatmentPanel({
   conditionLabel,
   plan,
   dataOcidPrefix,
+  patientName,
 }: TreatmentPanelProps) {
   return (
     <div className="space-y-4">
@@ -453,6 +460,14 @@ export function TreatmentPanel({
             <div className="bg-white px-6 py-4 space-y-4">
               {/* Meta */}
               <div className="flex flex-wrap justify-between gap-2 text-sm">
+                {patientName && (
+                  <div>
+                    <span className="font-semibold text-green-700">
+                      Patient:{" "}
+                    </span>
+                    <span className="text-gray-700">{patientName}</span>
+                  </div>
+                )}
                 <div>
                   <span className="font-semibold text-green-700">Date: </span>
                   <span className="text-gray-700">
@@ -659,7 +674,9 @@ export function TreatmentPanel({
 
           {/* Download Button */}
           <Button
-            onClick={() => downloadPrescription(conditionLabel, plan)}
+            onClick={() =>
+              downloadPrescription(conditionLabel, plan, patientName)
+            }
             data-ocid={`${dataOcidPrefix}.eprescription.primary_button`}
             className="mt-4 w-full sm:w-auto bg-green-700 hover:bg-green-800 text-white font-semibold"
           >

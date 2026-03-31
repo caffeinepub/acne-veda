@@ -1,5 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
   Camera,
@@ -8,6 +10,7 @@ import {
   RotateCcw,
   ScanLine,
   Upload,
+  User,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
@@ -25,6 +28,7 @@ export function ScanPage() {
   const [results, setResults] = useState<DetectedCondition[] | null>(null);
   const [expandedCondition, setExpandedCondition] =
     useState<ConditionType | null>(null);
+  const [patientName, setPatientName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -86,6 +90,31 @@ export function ScanPage() {
             conditions using real pixel analysis and provides personalised
             Ayurvedic treatment plans.
           </p>
+        </motion.div>
+
+        {/* Patient Name Input */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="max-w-sm mb-8"
+        >
+          <Label
+            htmlFor="patient-name"
+            className="flex items-center gap-1.5 mb-1.5 text-sm font-semibold text-foreground"
+          >
+            <User className="w-4 h-4 text-primary" />
+            Patient Name
+          </Label>
+          <Input
+            id="patient-name"
+            type="text"
+            placeholder="Enter patient name"
+            value={patientName}
+            onChange={(e) => setPatientName(e.target.value)}
+            data-ocid="scan.patient_name.input"
+            className="border-primary/30 focus-visible:ring-primary/40"
+          />
         </motion.div>
 
         <div className="grid gap-6 lg:grid-cols-2">
@@ -366,6 +395,7 @@ export function ScanPage() {
                                 <TreatmentPanel
                                   conditionLabel={info.label}
                                   plan={plan}
+                                  patientName={patientName}
                                   dataOcidPrefix={`scan.${result.type}`}
                                 />
                               </div>
