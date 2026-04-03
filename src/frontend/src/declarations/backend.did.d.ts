@@ -10,7 +10,13 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface _SERVICE {}
+export type PasswordHash = string;
+export interface _SERVICE {
+  'addAssessmentHistory' : ActorMethod<[string], undefined>,
+  'hasHistory' : ActorMethod<[string], boolean>,
+  'login' : ActorMethod<[string, PasswordHash], undefined>,
+  'registerUser' : ActorMethod<[string, PasswordHash], undefined>,
+}
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
 export declare const idlFactory: IDL.InterfaceFactory;

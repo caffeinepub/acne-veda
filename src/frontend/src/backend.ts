@@ -89,10 +89,71 @@ export class ExternalBlob {
         return this;
     }
 }
+export type PasswordHash = string;
 export interface backendInterface {
+    addAssessmentHistory(username: string): Promise<void>;
+    hasHistory(username: string): Promise<boolean>;
+    login(username: string, passwordHash: PasswordHash): Promise<void>;
+    registerUser(username: string, passwordHash: PasswordHash): Promise<void>;
 }
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
+    async addAssessmentHistory(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addAssessmentHistory(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addAssessmentHistory(arg0);
+            return result;
+        }
+    }
+    async hasHistory(arg0: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.hasHistory(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.hasHistory(arg0);
+            return result;
+        }
+    }
+    async login(arg0: string, arg1: PasswordHash): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.login(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.login(arg0, arg1);
+            return result;
+        }
+    }
+    async registerUser(arg0: string, arg1: PasswordHash): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.registerUser(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.registerUser(arg0, arg1);
+            return result;
+        }
+    }
 }
 export interface CreateActorOptions {
     agent?: Agent;

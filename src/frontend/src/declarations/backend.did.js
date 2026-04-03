@@ -8,10 +8,26 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const idlService = IDL.Service({});
+export const PasswordHash = IDL.Text;
+
+export const idlService = IDL.Service({
+  'addAssessmentHistory' : IDL.Func([IDL.Text], [], []),
+  'hasHistory' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
+  'login' : IDL.Func([IDL.Text, PasswordHash], [], ['query']),
+  'registerUser' : IDL.Func([IDL.Text, PasswordHash], [], []),
+});
 
 export const idlInitArgs = [];
 
-export const idlFactory = ({ IDL }) => { return IDL.Service({}); };
+export const idlFactory = ({ IDL }) => {
+  const PasswordHash = IDL.Text;
+  
+  return IDL.Service({
+    'addAssessmentHistory' : IDL.Func([IDL.Text], [], []),
+    'hasHistory' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
+    'login' : IDL.Func([IDL.Text, PasswordHash], [], ['query']),
+    'registerUser' : IDL.Func([IDL.Text, PasswordHash], [], []),
+  });
+};
 
 export const init = ({ IDL }) => { return []; };

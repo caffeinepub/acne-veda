@@ -8,13 +8,18 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { ScanLine } from "lucide-react";
+import { MobileFrame } from "./layouts/MobileFrame";
 import { AdminPage } from "./pages/AdminPage";
 import { AntiAgeingPage } from "./pages/AntiAgeingPage";
+import { DashboardPage } from "./pages/DashboardPage";
 import { GlowingSkinPage } from "./pages/GlowingSkinPage";
-import { HomePage } from "./pages/HomePage";
+import { LoginPage } from "./pages/LoginPage";
 import { ScanPage } from "./pages/ScanPage";
+import { SignupPage } from "./pages/SignupPage";
+import { SplashScreen } from "./pages/SplashScreen";
+import { WelcomeScreen } from "./pages/WelcomeScreen";
 
-// Layout with nav
+// Layout with nav header — used for content pages
 function RootLayout() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -33,13 +38,6 @@ function RootLayout() {
           </Link>
           <nav className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <Link
-              to="/"
-              className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full text-xs sm:text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors whitespace-nowrap"
-              data-ocid="nav.home_tab"
-            >
-              Home
-            </Link>
-            <Link
               to="/scan"
               className="flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm bg-primary text-primary-foreground hover:opacity-90 transition-opacity whitespace-nowrap"
               data-ocid="nav.scan_tab"
@@ -56,40 +54,105 @@ function RootLayout() {
   );
 }
 
-const rootRoute = createRootRoute({ component: RootLayout });
-const homeRoute = createRoute({
+// Layout without nav header — used for splash, welcome, login, dashboard (full-screen mobile designs)
+function NoHeaderLayout() {
+  return (
+    <>
+      <Outlet />
+      <Toaster />
+    </>
+  );
+}
+
+// Root route — bare shell, no layout
+const rootRoute = createRootRoute({ component: Outlet });
+
+// No-header layout route (splash, welcome, login, signup, dashboard)
+const noHeaderRoute = createRoute({
   getParentRoute: () => rootRoute,
+  id: "no-header",
+  component: NoHeaderLayout,
+});
+
+// Splash screen at "/" (home)
+const homeRoute = createRoute({
+  getParentRoute: () => noHeaderRoute,
   path: "/",
-  component: HomePage,
+  component: SplashScreen,
+});
+
+// Auth & dashboard routes — directly under no-header (no MobileFrame wrapper)
+const loginRoute = createRoute({
+  getParentRoute: () => noHeaderRoute,
+  path: "/login",
+  component: LoginPage,
+});
+const signupRoute = createRoute({
+  getParentRoute: () => noHeaderRoute,
+  path: "/signup",
+  component: SignupPage,
+});
+const dashboardRoute = createRoute({
+  getParentRoute: () => noHeaderRoute,
+  path: "/dashboard",
+  component: DashboardPage,
+});
+
+// Mobile app routes inside MobileFrame, parented under no-header
+const mobileRootRoute = createRoute({
+  getParentRoute: () => noHeaderRoute,
+  id: "mobile",
+  component: MobileFrame,
+});
+const welcomeRoute = createRoute({
+  getParentRoute: () => mobileRootRoute,
+  path: "/welcome",
+  component: WelcomeScreen,
+});
+
+// Header layout route (content pages)
+const headerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: "header",
+  component: RootLayout,
 });
 const scanRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => headerRoute,
   path: "/scan",
   component: ScanPage,
 });
 const antiAgeingRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => headerRoute,
   path: "/anti-ageing",
   component: AntiAgeingPage,
 });
 const glowingSkinRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => headerRoute,
   path: "/glowing-skin",
   component: GlowingSkinPage,
 });
 const adminRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => headerRoute,
   path: "/admin",
   component: AdminPage,
 });
 
 const routeTree = rootRoute.addChildren([
-  homeRoute,
-  scanRoute,
-  antiAgeingRoute,
-  glowingSkinRoute,
-  adminRoute,
+  noHeaderRoute.addChildren([
+    homeRoute,
+    loginRoute,
+    signupRoute,
+    dashboardRoute,
+    mobileRootRoute.addChildren([welcomeRoute]),
+  ]),
+  headerRoute.addChildren([
+    scanRoute,
+    antiAgeingRoute,
+    glowingSkinRoute,
+    adminRoute,
+  ]),
 ]);
+
 const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {
