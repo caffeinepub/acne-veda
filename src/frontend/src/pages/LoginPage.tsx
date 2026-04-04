@@ -14,7 +14,7 @@ async function hashPassword(plain: string): Promise<string> {
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { actor } = useActor();
+  const { actor, isFetching } = useActor();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -22,9 +22,11 @@ export function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const actorReady = !!actor && !isFetching;
+
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    if (!actor) return;
+    if (!actorReady) return;
     setError("");
     setLoading(true);
     try {
@@ -33,20 +35,25 @@ export function LoginPage() {
       localStorage.setItem("acneveda_user", username.trim());
       navigate({ to: "/dashboard" });
     } catch (err: any) {
-      const msg = err?.message ?? String(err);
+      const msg = err?.message ?? "";
+      const raw = String(err);
+      const combined = `${msg} ${raw}`.toLowerCase();
       if (
-        msg.toLowerCase().includes("invalid") ||
-        msg.toLowerCase().includes("wrong") ||
-        msg.toLowerCase().includes("incorrect")
+        combined.includes("invalid") ||
+        combined.includes("wrong") ||
+        combined.includes("incorrect")
       ) {
         setError("Invalid username or password.");
       } else if (
-        msg.toLowerCase().includes("not found") ||
-        msg.toLowerCase().includes("exist")
+        combined.includes("not found") ||
+        combined.includes("no user") ||
+        combined.includes("does not exist")
       ) {
         setError("Account not found. Please sign up.");
       } else {
-        setError("Login failed. Please check your credentials.");
+        // Show the actual error so user/developer can see what went wrong
+        const displayMsg = msg || raw;
+        setError(`Login failed: ${displayMsg}`);
       }
     } finally {
       setLoading(false);
@@ -267,29 +274,37 @@ export function LoginPage() {
           <button
             type="submit"
             data-ocid="login.submit_button"
-            disabled={loading || !username.trim() || !password}
+            disabled={loading || !username.trim() || !password || !actorReady}
             className="w-full py-3.5 mt-2 rounded-full text-white font-semibold text-base transition-all active:scale-[0.98] hover:opacity-90"
             style={{
               fontFamily: "'DM Sans', system-ui, sans-serif",
               background:
-                !loading && username.trim() && password
+                !loading && username.trim() && password && actorReady
                   ? "oklch(0.65 0.2 35)"
                   : "oklch(0.78 0.06 60)",
               boxShadow:
-                !loading && username.trim() && password
+                !loading && username.trim() && password && actorReady
                   ? "0 4px 20px -2px oklch(0.65 0.2 35 / 0.35), 0 1px 4px -1px oklch(0.65 0.2 35 / 0.2)"
                   : "none",
               cursor:
-                loading || !username.trim() || !password
+                loading || !username.trim() || !password || !actorReady
                   ? "not-allowed"
                   : "pointer",
-              opacity: loading || !username.trim() || !password ? 0.7 : 1,
+              opacity:
+                loading || !username.trim() || !password || !actorReady
+                  ? 0.7
+                  : 1,
             }}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Signing in…
+              </span>
+            ) : isFetching || !actor ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Connecting…
               </span>
             ) : (
               "Sign In"

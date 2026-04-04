@@ -270,7 +270,7 @@ export function DashboardPage() {
                 <button
                   type="button"
                   data-ocid="dashboard.primary_button"
-                  onClick={() => navigate({ to: "/scan" })}
+                  onClick={() => navigate({ to: "/assessment/step1" })}
                   className="w-full py-3.5 rounded-full text-white font-semibold text-sm transition-all active:scale-[0.98] hover:opacity-90"
                   style={{
                     fontFamily: "'DM Sans', system-ui, sans-serif",

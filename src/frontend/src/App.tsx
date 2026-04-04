@@ -18,6 +18,9 @@ import { ScanPage } from "./pages/ScanPage";
 import { SignupPage } from "./pages/SignupPage";
 import { SplashScreen } from "./pages/SplashScreen";
 import { WelcomeScreen } from "./pages/WelcomeScreen";
+import { Step1BasicInfo } from "./pages/assessment/Step1BasicInfo";
+import { Step2Analyzing } from "./pages/assessment/Step2Analyzing";
+import { Step3Chat } from "./pages/assessment/Step3Chat";
 
 // Layout with nav header — used for content pages
 function RootLayout() {
@@ -98,6 +101,23 @@ const dashboardRoute = createRoute({
   component: DashboardPage,
 });
 
+// Assessment flow routes
+const assessmentStep1Route = createRoute({
+  getParentRoute: () => noHeaderRoute,
+  path: "/assessment/step1",
+  component: Step1BasicInfo,
+});
+const assessmentStep2Route = createRoute({
+  getParentRoute: () => noHeaderRoute,
+  path: "/assessment/step2",
+  component: Step2Analyzing,
+});
+const assessmentStep3Route = createRoute({
+  getParentRoute: () => noHeaderRoute,
+  path: "/assessment/step3",
+  component: Step3Chat,
+});
+
 // Mobile app routes inside MobileFrame, parented under no-header
 const mobileRootRoute = createRoute({
   getParentRoute: () => noHeaderRoute,
@@ -143,6 +163,9 @@ const routeTree = rootRoute.addChildren([
     loginRoute,
     signupRoute,
     dashboardRoute,
+    assessmentStep1Route,
+    assessmentStep2Route,
+    assessmentStep3Route,
     mobileRootRoute.addChildren([welcomeRoute]),
   ]),
   headerRoute.addChildren([

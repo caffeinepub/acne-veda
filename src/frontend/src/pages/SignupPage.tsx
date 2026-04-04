@@ -35,7 +35,7 @@ function getChecks(pw: string): StrengthCheck[] {
 
 export function SignupPage() {
   const navigate = useNavigate();
-  const { actor } = useActor();
+  const { actor, isFetching } = useActor();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -49,10 +49,11 @@ export function SignupPage() {
   const allStrong = checks.every((c) => c.pass);
   const passwordsMatch = password.length > 0 && password === confirm;
   const canSubmit = username.trim().length >= 3 && allStrong && passwordsMatch;
+  const actorReady = !!actor && !isFetching;
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
-    if (!actor || !canSubmit) return;
+    if (!actorReady || !canSubmit) return;
     setError("");
     setLoading(true);
     try {
@@ -61,14 +62,21 @@ export function SignupPage() {
       localStorage.setItem("acneveda_user", username.trim());
       navigate({ to: "/dashboard" });
     } catch (err: any) {
-      const msg = err?.message ?? String(err);
+      const msg = err?.message ?? "";
+      const raw = String(err);
+      const combined = `${msg} ${raw}`.toLowerCase();
       if (
-        msg.toLowerCase().includes("taken") ||
-        msg.toLowerCase().includes("exist")
+        combined.includes("taken") ||
+        combined.includes("already") ||
+        combined.includes("exist")
       ) {
         setError("That username is already taken. Please choose another.");
+      } else if (combined.includes("invalid") || combined.includes("short")) {
+        setError("Username or password is invalid. Please check and retry.");
       } else {
-        setError("Sign up failed. Please try again.");
+        // Show the actual error text so the user/developer can see what went wrong
+        const displayMsg = msg || raw;
+        setError(`Sign up failed: ${displayMsg}`);
       }
     } finally {
       setLoading(false);
@@ -458,26 +466,32 @@ export function SignupPage() {
           <button
             type="submit"
             data-ocid="signup.submit_button"
-            disabled={!canSubmit || loading}
+            disabled={!canSubmit || loading || !actorReady}
             className="w-full py-3.5 mt-1 rounded-full text-white font-semibold text-base transition-all active:scale-[0.98]"
             style={{
               fontFamily: "'DM Sans', system-ui, sans-serif",
               background:
-                canSubmit && !loading
+                canSubmit && !loading && actorReady
                   ? "oklch(0.65 0.2 35)"
                   : "oklch(0.78 0.06 60)",
               boxShadow:
-                canSubmit && !loading
+                canSubmit && !loading && actorReady
                   ? "0 4px 20px -2px oklch(0.65 0.2 35 / 0.35), 0 1px 4px -1px oklch(0.65 0.2 35 / 0.2)"
                   : "none",
-              cursor: canSubmit && !loading ? "pointer" : "not-allowed",
-              opacity: canSubmit && !loading ? 1 : 0.7,
+              cursor:
+                canSubmit && !loading && actorReady ? "pointer" : "not-allowed",
+              opacity: canSubmit && !loading && actorReady ? 1 : 0.7,
             }}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Creating account…
+              </span>
+            ) : isFetching || !actor ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Connecting…
               </span>
             ) : (
               "Sign Up"

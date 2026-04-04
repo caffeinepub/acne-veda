@@ -1,20 +1,19 @@
 # Acne Veda
 
 ## Current State
-Backend has addAssessmentHistory and hasHistory methods. Dashboard calls hasHistory. ScanPage does not call addAssessmentHistory after scan -- so Follow-Up never appears.
+Backend Motoko canister has correct code but deployed canister reports IC0537 (no wasm module installed).
 
 ## Requested Changes (Diff)
 
 ### Add
-- Call addAssessmentHistory(username) from ScanPage after scan completes
+- Nothing new
 
 ### Modify
-- ScanPage: add useActor hook, call addAssessmentHistory after scan
+- Force full rebuild and deploy so backend wasm gets installed
 
 ### Remove
 - Nothing
 
 ## Implementation Plan
-1. Import useActor in ScanPage
-2. Read acneveda_user from localStorage
-3. After analyzeImage returns, call actor.addAssessmentHistory(username) fire-and-forget
+1. No code changes - backend Motoko code is correct
+2. Trigger full build+deploy to fix IC0537 and enable signup/login
