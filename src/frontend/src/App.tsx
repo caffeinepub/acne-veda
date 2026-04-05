@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { ScanLine } from "lucide-react";
 import { MobileFrame } from "./layouts/MobileFrame";
+import { AcneChatPage } from "./pages/AcneChatPage";
 import { AdminPage } from "./pages/AdminPage";
 import { AntiAgeingPage } from "./pages/AntiAgeingPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -16,6 +17,7 @@ import { GlowingSkinPage } from "./pages/GlowingSkinPage";
 import { LoginPage } from "./pages/LoginPage";
 import { ScanPage } from "./pages/ScanPage";
 import { SignupPage } from "./pages/SignupPage";
+import { SkinConcernsPage } from "./pages/SkinConcernsPage";
 import { SplashScreen } from "./pages/SplashScreen";
 import { WelcomeScreen } from "./pages/WelcomeScreen";
 import { Step1BasicInfo } from "./pages/assessment/Step1BasicInfo";
@@ -118,6 +120,18 @@ const assessmentStep3Route = createRoute({
   component: Step3Chat,
 });
 
+// Skin concerns & acne chat — new AI skincare flow
+const skinConcernsRoute = createRoute({
+  getParentRoute: () => noHeaderRoute,
+  path: "/skin-concerns",
+  component: SkinConcernsPage,
+});
+const acneChatRoute = createRoute({
+  getParentRoute: () => noHeaderRoute,
+  path: "/acne-chat",
+  component: AcneChatPage,
+});
+
 // Mobile app routes inside MobileFrame, parented under no-header
 const mobileRootRoute = createRoute({
   getParentRoute: () => noHeaderRoute,
@@ -166,6 +180,8 @@ const routeTree = rootRoute.addChildren([
     assessmentStep1Route,
     assessmentStep2Route,
     assessmentStep3Route,
+    skinConcernsRoute,
+    acneChatRoute,
     mobileRootRoute.addChildren([welcomeRoute]),
   ]),
   headerRoute.addChildren([

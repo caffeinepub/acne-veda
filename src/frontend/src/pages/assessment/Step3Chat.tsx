@@ -16,7 +16,11 @@ export function Step3Chat() {
   function handleSelect(option: ConcernOption) {
     setSelected(option);
     setTimeout(() => {
-      navigate({ to: "/scan" });
+      if (option === "Skin") {
+        navigate({ to: "/skin-concerns" });
+      } else {
+        navigate({ to: "/scan" });
+      }
     }, 320);
   }
 
