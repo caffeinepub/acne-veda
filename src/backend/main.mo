@@ -1,9 +1,9 @@
 import Map "mo:core/Map";
 import Text "mo:core/Text";
 import Runtime "mo:core/Runtime";
+import Migration "migration";
 
-
-
+(with migration = Migration.run)
 actor {
   public type PasswordHash = Text;
 
@@ -13,10 +13,10 @@ actor {
   };
 
   // Map of username to User record
-  var users = Map.empty<Text, User>();
+  let users = Map.empty<Text, User>();
 
   // Map of username to history status
-  var history = Map.empty<Text, Bool>();
+  let history = Map.empty<Text, Bool>();
 
   // Register a new user
   // Inputs:
