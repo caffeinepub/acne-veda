@@ -15,6 +15,7 @@ import { AntiAgeingPage } from "./pages/AntiAgeingPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { GlowingSkinPage } from "./pages/GlowingSkinPage";
 import { LoginPage } from "./pages/LoginPage";
+import { MainAppPage } from "./pages/MainAppPage";
 import { ScanPage } from "./pages/ScanPage";
 import { SignupPage } from "./pages/SignupPage";
 import { SkinConcernsPage } from "./pages/SkinConcernsPage";
@@ -132,6 +133,13 @@ const acneChatRoute = createRoute({
   component: AcneChatPage,
 });
 
+// Main app interface with bottom navigation
+const mainAppRoute = createRoute({
+  getParentRoute: () => noHeaderRoute,
+  path: "/main",
+  component: MainAppPage,
+});
+
 // Mobile app routes inside MobileFrame, parented under no-header
 const mobileRootRoute = createRoute({
   getParentRoute: () => noHeaderRoute,
@@ -182,6 +190,7 @@ const routeTree = rootRoute.addChildren([
     assessmentStep3Route,
     skinConcernsRoute,
     acneChatRoute,
+    mainAppRoute,
     mobileRootRoute.addChildren([welcomeRoute]),
   ]),
   headerRoute.addChildren([

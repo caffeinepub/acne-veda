@@ -60,7 +60,8 @@ export function SignupPage() {
       const hash = await hashPassword(password);
       await actor.registerUser(username.trim(), hash);
       localStorage.setItem("acneveda_user", username.trim());
-      navigate({ to: "/dashboard" });
+      // New users always go to assessment first
+      navigate({ to: "/assessment/step1" });
     } catch (err: any) {
       const msg = err?.message ?? "";
       const raw = String(err);
@@ -74,7 +75,6 @@ export function SignupPage() {
       } else if (combined.includes("invalid") || combined.includes("short")) {
         setError("Username or password is invalid. Please check and retry.");
       } else {
-        // Show the actual error text so the user/developer can see what went wrong
         const displayMsg = msg || raw;
         setError(`Sign up failed: ${displayMsg}`);
       }
@@ -85,35 +85,10 @@ export function SignupPage() {
 
   return (
     <div className="relative flex flex-col min-h-screen bg-[oklch(0.97_0.012_80)] overflow-hidden">
-      {/* Leaf accent */}
+      {/* Leaf accent top-left */}
       <div
-        className="absolute top-0 right-0 pointer-events-none"
-        style={{ opacity: 0.15 }}
-        aria-hidden="true"
-      >
-        <svg
-          width="110"
-          height="120"
-          viewBox="0 0 110 120"
-          fill="none"
-          aria-hidden="true"
-          role="presentation"
-        >
-          <path
-            d="M100 8 C72 26, 55 58, 76 96 C87 65, 108 38, 100 8Z"
-            fill="#4a7c59"
-            fillOpacity="0.7"
-          />
-          <path
-            d="M112 4 C80 24, 64 58, 88 94 C100 62, 118 34, 112 4Z"
-            fill="#5a9068"
-            fillOpacity="0.45"
-          />
-        </svg>
-      </div>
-      <div
-        className="absolute bottom-0 left-0 pointer-events-none"
-        style={{ opacity: 0.1 }}
+        className="absolute top-0 left-0 pointer-events-none"
+        style={{ opacity: 0.12 }}
         aria-hidden="true"
       >
         <svg
@@ -125,9 +100,9 @@ export function SignupPage() {
           role="presentation"
         >
           <path
-            d="M10 90 C32 68, 35 38, 14 12 C6 42, -8 68, 10 90Z"
-            fill="#c87941"
-            fillOpacity="0.6"
+            d="M10 10 C35 25, 50 55, 30 90 C20 60, 2 35, 10 10Z"
+            fill="#4a7c59"
+            fillOpacity="0.7"
           />
         </svg>
       </div>
@@ -137,55 +112,73 @@ export function SignupPage() {
         <motion.button
           type="button"
           data-ocid="signup.back_button"
-          onClick={() => navigate({ to: "/login" })}
-          className="flex items-center gap-1.5 mb-8 w-fit -ml-1"
-          style={{ color: "oklch(0.4 0.08 140)" }}
+          onClick={() => navigate({ to: "/welcome" })}
+          className="flex items-center gap-2 mb-6 transition-opacity hover:opacity-70 self-start"
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            fontFamily: "'DM Sans', system-ui, sans-serif",
+            color: "oklch(0.45 0.1 140)",
+          }}
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span className="text-sm font-medium">Back</span>
+        </motion.button>
+
+        {/* Logo + brand */}
+        <motion.div
+          className="flex items-center gap-3 mb-8"
           initial={{ opacity: 0, x: -12 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
-          whileTap={{ scale: 0.95 }}
         >
-          <ArrowLeft className="w-5 h-5" />
-          <span
-            className="text-sm font-medium"
-            style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+          <div
+            className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
+            style={{
+              boxShadow: "0 2px 8px oklch(0.55 0.14 145 / 0.2)",
+            }}
           >
-            Back to Login
-          </span>
-        </motion.button>
-
-        {/* Header */}
-        <motion.div
-          className="mb-7"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.05 }}
-        >
-          <div className="flex items-center gap-3 mb-3">
             <img
               src="/assets/uploads/beige_and_green_minimal_ayurveda_company_logo_20260329_160220_0000-019d3d43-5763-7149-b499-c52ab9b218f8-1.jpg"
               alt="Acne Veda"
-              className="w-10 h-10 rounded-full object-contain bg-white"
-              style={{
-                boxShadow: "0 2px 8px -2px oklch(0.55 0.14 145 / 0.18)",
-              }}
+              className="w-full h-full object-contain bg-white"
             />
-            <span
-              className="text-xs font-medium uppercase tracking-widest"
+          </div>
+          <div>
+            <p
+              className="text-xs font-semibold uppercase tracking-widest"
               style={{
                 fontFamily: "'DM Sans', system-ui, sans-serif",
                 color: "oklch(0.55 0.14 145)",
-                letterSpacing: "0.12em",
               }}
             >
               Acne Veda
-            </span>
+            </p>
+            <p
+              className="text-xs"
+              style={{
+                fontFamily: "'DM Sans', system-ui, sans-serif",
+                color: "oklch(0.6 0.04 60)",
+              }}
+            >
+              Clear Skin Naturally
+            </p>
           </div>
+        </motion.div>
+
+        {/* Heading */}
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+        >
           <h1
-            className="text-3xl font-bold mb-1.5"
+            className="text-2xl font-bold mb-1"
             style={{
               fontFamily: "'Playfair Display', Georgia, serif",
-              color: "oklch(0.22 0.07 140)",
+              color: "oklch(0.28 0.08 140)",
             }}
           >
             Create Account
@@ -194,10 +187,10 @@ export function SignupPage() {
             className="text-sm"
             style={{
               fontFamily: "'DM Sans', system-ui, sans-serif",
-              color: "oklch(0.5 0.05 60)",
+              color: "oklch(0.55 0.04 60)",
             }}
           >
-            Begin your Ayurvedic skin journey
+            Join Acne Veda and start your skin journey
           </p>
         </motion.div>
 
@@ -205,49 +198,45 @@ export function SignupPage() {
         <motion.form
           onSubmit={handleSignup}
           className="flex flex-col gap-4"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.12 }}
+          transition={{ delay: 0.18, duration: 0.45 }}
         >
           {/* Username */}
           <div className="flex flex-col gap-1.5">
             <label
-              htmlFor="username"
-              className="text-sm font-medium"
+              htmlFor="signup-username"
+              className="text-xs font-semibold uppercase tracking-wider"
               style={{
                 fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: "oklch(0.32 0.07 140)",
+                color: "oklch(0.42 0.08 140)",
               }}
             >
               Username
             </label>
             <input
-              id="username"
-              data-ocid="signup.input"
+              id="signup-username"
               type="text"
+              data-ocid="signup.input"
               autoComplete="username"
+              placeholder="Choose a username (min 3 chars)"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="e.g. dr_akash"
-              className="w-full px-4 py-3 rounded-2xl text-sm outline-none transition-all"
+              className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
               style={{
                 fontFamily: "'DM Sans', system-ui, sans-serif",
-                background: "oklch(1 0 0)",
-                border: "1.5px solid oklch(0.88 0.025 70)",
-                color: "oklch(0.2 0.04 50)",
-                fontSize: "16px",
-                boxShadow: "0 1px 4px -1px oklch(0.55 0.14 145 / 0.08)",
+                background: "oklch(0.99 0.006 80)",
+                border: "1.5px solid oklch(0.88 0.03 80)",
+                color: "oklch(0.28 0.08 140)",
               }}
               onFocus={(e) => {
-                e.currentTarget.style.borderColor =
-                  "oklch(0.55 0.14 145 / 0.6)";
-                e.currentTarget.style.boxShadow =
+                e.target.style.borderColor = "oklch(0.55 0.14 145)";
+                e.target.style.boxShadow =
                   "0 0 0 3px oklch(0.55 0.14 145 / 0.12)";
               }}
               onBlur={(e) => {
-                e.currentTarget.style.borderColor = "oklch(0.88 0.025 70)";
-                e.currentTarget.style.boxShadow =
-                  "0 1px 4px -1px oklch(0.55 0.14 145 / 0.08)";
+                e.target.style.borderColor = "oklch(0.88 0.03 80)";
+                e.target.style.boxShadow = "none";
               }}
             />
           </div>
@@ -255,54 +244,46 @@ export function SignupPage() {
           {/* Password */}
           <div className="flex flex-col gap-1.5">
             <label
-              htmlFor="pw"
-              className="text-sm font-medium"
+              htmlFor="signup-password"
+              className="text-xs font-semibold uppercase tracking-wider"
               style={{
                 fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: "oklch(0.32 0.07 140)",
+                color: "oklch(0.42 0.08 140)",
               }}
             >
               Password
             </label>
             <div className="relative">
               <input
-                id="pw"
-                data-ocid="signup.textarea"
+                id="signup-password"
                 type={showPassword ? "text" : "password"}
+                data-ocid="signup.input"
                 autoComplete="new-password"
+                placeholder="Create a strong password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-4 py-3 pr-12 rounded-2xl text-sm outline-none transition-all"
+                className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
                 style={{
                   fontFamily: "'DM Sans', system-ui, sans-serif",
-                  background: "oklch(1 0 0)",
-                  border: `1.5px solid ${password.length > 0 && !allStrong ? "oklch(0.6 0.2 27)" : "oklch(0.88 0.025 70)"}`,
-                  color: "oklch(0.2 0.04 50)",
-                  fontSize: "16px",
-                  boxShadow: "0 1px 4px -1px oklch(0.55 0.14 145 / 0.08)",
+                  background: "oklch(0.99 0.006 80)",
+                  border: "1.5px solid oklch(0.88 0.03 80)",
+                  color: "oklch(0.28 0.08 140)",
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor =
-                    "oklch(0.55 0.14 145 / 0.6)";
-                  e.currentTarget.style.boxShadow =
+                  e.target.style.borderColor = "oklch(0.55 0.14 145)";
+                  e.target.style.boxShadow =
                     "0 0 0 3px oklch(0.55 0.14 145 / 0.12)";
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.borderColor =
-                    password.length > 0 && !allStrong
-                      ? "oklch(0.6 0.2 27)"
-                      : "oklch(0.88 0.025 70)";
-                  e.currentTarget.style.boxShadow =
-                    "0 1px 4px -1px oklch(0.55 0.14 145 / 0.08)";
+                  e.target.style.borderColor = "oklch(0.88 0.03 80)";
+                  e.target.style.boxShadow = "none";
                 }}
               />
               <button
                 type="button"
-                data-ocid="signup.toggle"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-lg transition-colors"
-                style={{ color: "oklch(0.55 0.06 140)" }}
+                onClick={() => setShowPassword((p) => !p)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-70"
+                style={{ color: "oklch(0.6 0.04 60)" }}
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -313,26 +294,20 @@ export function SignupPage() {
               </button>
             </div>
 
-            {/* Strength checklist */}
+            {/* Strength checks */}
             {password.length > 0 && (
-              <motion.div
-                className="mt-1.5 flex flex-col gap-1 pl-1"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                transition={{ duration: 0.25 }}
-                data-ocid="signup.panel"
-              >
+              <div className="flex flex-col gap-1 mt-1">
                 {checks.map((check) => (
                   <div key={check.label} className="flex items-center gap-2">
                     {check.pass ? (
                       <CheckCircle2
                         className="w-3.5 h-3.5 flex-shrink-0"
-                        style={{ color: "oklch(0.55 0.15 145)" }}
+                        style={{ color: "oklch(0.55 0.18 145)" }}
                       />
                     ) : (
                       <Circle
                         className="w-3.5 h-3.5 flex-shrink-0"
-                        style={{ color: "oklch(0.72 0.04 60)" }}
+                        style={{ color: "oklch(0.75 0.04 60)" }}
                       />
                     )}
                     <span
@@ -340,77 +315,66 @@ export function SignupPage() {
                       style={{
                         fontFamily: "'DM Sans', system-ui, sans-serif",
                         color: check.pass
-                          ? "oklch(0.42 0.12 145)"
-                          : "oklch(0.55 0.04 60)",
+                          ? "oklch(0.45 0.14 145)"
+                          : "oklch(0.6 0.04 60)",
                       }}
                     >
                       {check.label}
                     </span>
                   </div>
                 ))}
-              </motion.div>
+              </div>
             )}
           </div>
 
           {/* Confirm Password */}
           <div className="flex flex-col gap-1.5">
             <label
-              htmlFor="confirm"
-              className="text-sm font-medium"
+              htmlFor="signup-confirm"
+              className="text-xs font-semibold uppercase tracking-wider"
               style={{
                 fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: "oklch(0.32 0.07 140)",
+                color: "oklch(0.42 0.08 140)",
               }}
             >
               Confirm Password
             </label>
             <div className="relative">
               <input
-                id="confirm"
-                data-ocid="signup.select"
+                id="signup-confirm"
                 type={showConfirm ? "text" : "password"}
+                data-ocid="signup.input"
                 autoComplete="new-password"
+                placeholder="Re-enter your password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-4 py-3 pr-12 rounded-2xl text-sm outline-none transition-all"
+                className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
                 style={{
                   fontFamily: "'DM Sans', system-ui, sans-serif",
-                  background: "oklch(1 0 0)",
-                  border: `1.5px solid ${confirm.length > 0 && !passwordsMatch ? "oklch(0.6 0.2 27)" : confirm.length > 0 && passwordsMatch ? "oklch(0.55 0.15 145)" : "oklch(0.88 0.025 70)"}`,
-                  color: "oklch(0.2 0.04 50)",
-                  fontSize: "16px",
-                  boxShadow: "0 1px 4px -1px oklch(0.55 0.14 145 / 0.08)",
+                  background: "oklch(0.99 0.006 80)",
+                  border:
+                    confirm.length > 0
+                      ? passwordsMatch
+                        ? "1.5px solid oklch(0.55 0.18 145)"
+                        : "1.5px solid oklch(0.62 0.2 25)"
+                      : "1.5px solid oklch(0.88 0.03 80)",
+                  color: "oklch(0.28 0.08 140)",
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor =
-                    "oklch(0.55 0.14 145 / 0.6)";
-                  e.currentTarget.style.boxShadow =
+                  if (!passwordsMatch) return;
+                  e.target.style.boxShadow =
                     "0 0 0 3px oklch(0.55 0.14 145 / 0.12)";
                 }}
                 onBlur={(e) => {
-                  const border =
-                    confirm.length > 0 && !passwordsMatch
-                      ? "oklch(0.6 0.2 27)"
-                      : confirm.length > 0 && passwordsMatch
-                        ? "oklch(0.55 0.15 145)"
-                        : "oklch(0.88 0.025 70)";
-                  e.currentTarget.style.borderColor = border;
-                  e.currentTarget.style.boxShadow =
-                    "0 1px 4px -1px oklch(0.55 0.14 145 / 0.08)";
+                  e.target.style.boxShadow = "none";
                 }}
               />
               <button
                 type="button"
-                data-ocid="signup.checkbox"
-                onClick={() => setShowConfirm((v) => !v)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-lg transition-colors"
-                style={{ color: "oklch(0.55 0.06 140)" }}
-                aria-label={
-                  showConfirm
-                    ? "Hide confirm password"
-                    : "Show confirm password"
-                }
+                onClick={() => setShowConfirm((p) => !p)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-70"
+                style={{ color: "oklch(0.6 0.04 60)" }}
+                aria-label={showConfirm ? "Hide password" : "Show password"}
               >
                 {showConfirm ? (
                   <EyeOff className="w-4 h-4" />
@@ -421,53 +385,40 @@ export function SignupPage() {
             </div>
             {confirm.length > 0 && !passwordsMatch && (
               <p
-                className="text-xs pl-1"
+                className="text-xs mt-0.5"
                 data-ocid="signup.error_state"
                 style={{
                   fontFamily: "'DM Sans', system-ui, sans-serif",
-                  color: "oklch(0.55 0.2 27)",
+                  color: "oklch(0.55 0.2 25)",
                 }}
               >
-                Passwords do not match.
-              </p>
-            )}
-            {confirm.length > 0 && passwordsMatch && (
-              <p
-                className="text-xs pl-1"
-                style={{
-                  fontFamily: "'DM Sans', system-ui, sans-serif",
-                  color: "oklch(0.42 0.12 145)",
-                }}
-              >
-                ✓ Passwords match
+                Passwords do not match
               </p>
             )}
           </div>
 
-          {/* Server error */}
+          {/* Error message */}
           {error && (
-            <motion.div
+            <div
               data-ocid="signup.error_state"
-              className="px-4 py-3 rounded-2xl text-sm"
+              className="rounded-xl px-4 py-3 text-sm"
               style={{
-                background: "oklch(0.97 0.04 27)",
-                border: "1px solid oklch(0.85 0.1 27)",
-                color: "oklch(0.45 0.18 27)",
                 fontFamily: "'DM Sans', system-ui, sans-serif",
+                background: "oklch(0.96 0.04 25)",
+                border: "1px solid oklch(0.85 0.08 25)",
+                color: "oklch(0.45 0.18 25)",
               }}
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
             >
               {error}
-            </motion.div>
+            </div>
           )}
 
-          {/* Sign Up button */}
+          {/* Submit */}
           <button
             type="submit"
             data-ocid="signup.submit_button"
             disabled={!canSubmit || loading || !actorReady}
-            className="w-full py-3.5 mt-1 rounded-full text-white font-semibold text-base transition-all active:scale-[0.98]"
+            className="w-full py-3.5 rounded-xl font-semibold text-sm text-white mt-2 transition-all active:scale-[0.98]"
             style={{
               fontFamily: "'DM Sans', system-ui, sans-serif",
               background:

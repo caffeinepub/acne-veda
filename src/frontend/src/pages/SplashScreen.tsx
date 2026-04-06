@@ -8,7 +8,8 @@ export function SplashScreen() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate({ to: "/welcome" });
+      const user = localStorage.getItem("acneveda_user");
+      navigate({ to: user ? "/main" : "/welcome" });
     }, 2400);
     return () => clearTimeout(timer);
   }, [navigate]);

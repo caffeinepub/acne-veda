@@ -33,7 +33,13 @@ export function LoginPage() {
       const hash = await hashPassword(password);
       await actor.login(username.trim(), hash);
       localStorage.setItem("acneveda_user", username.trim());
-      navigate({ to: "/dashboard" });
+      // Check if user has completed assessment; route accordingly
+      try {
+        const history = await actor.hasHistory(username.trim());
+        navigate({ to: history ? "/main" : "/assessment/step1" });
+      } catch {
+        navigate({ to: "/assessment/step1" });
+      }
     } catch (err: any) {
       const msg = err?.message ?? "";
       const raw = String(err);
@@ -51,7 +57,6 @@ export function LoginPage() {
       ) {
         setError("Account not found. Please sign up.");
       } else {
-        // Show the actual error so user/developer can see what went wrong
         const displayMsg = msg || raw;
         setError(`Login failed: ${displayMsg}`);
       }
@@ -97,36 +102,52 @@ export function LoginPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <img
-            src="/assets/uploads/beige_and_green_minimal_ayurveda_company_logo_20260329_160220_0000-019d3d43-5763-7149-b499-c52ab9b218f8-1.jpg"
-            alt="Acne Veda"
-            className="w-10 h-10 rounded-full object-contain bg-white"
-            style={{ boxShadow: "0 2px 8px -2px oklch(0.55 0.14 145 / 0.18)" }}
-          />
-          <span
-            className="text-xs font-medium uppercase tracking-widest"
+          <div
+            className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
             style={{
-              fontFamily: "'DM Sans', system-ui, sans-serif",
-              color: "oklch(0.55 0.14 145)",
-              letterSpacing: "0.12em",
+              boxShadow: "0 2px 8px oklch(0.55 0.14 145 / 0.2)",
             }}
           >
-            Acne Veda
-          </span>
+            <img
+              src="/assets/uploads/beige_and_green_minimal_ayurveda_company_logo_20260329_160220_0000-019d3d43-5763-7149-b499-c52ab9b218f8-1.jpg"
+              alt="Acne Veda"
+              className="w-full h-full object-contain bg-white"
+            />
+          </div>
+          <div>
+            <p
+              className="text-xs font-semibold uppercase tracking-widest"
+              style={{
+                fontFamily: "'DM Sans', system-ui, sans-serif",
+                color: "oklch(0.55 0.14 145)",
+              }}
+            >
+              Acne Veda
+            </p>
+            <p
+              className="text-xs"
+              style={{
+                fontFamily: "'DM Sans', system-ui, sans-serif",
+                color: "oklch(0.6 0.04 60)",
+              }}
+            >
+              Clear Skin Naturally
+            </p>
+          </div>
         </motion.div>
 
-        {/* Header */}
+        {/* Heading */}
         <motion.div
           className="mb-8"
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.05 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
         >
           <h1
-            className="text-3xl font-bold mb-2"
+            className="text-2xl font-bold mb-1"
             style={{
               fontFamily: "'Playfair Display', Georgia, serif",
-              color: "oklch(0.22 0.07 140)",
+              color: "oklch(0.28 0.08 140)",
             }}
           >
             Welcome Back
@@ -135,60 +156,56 @@ export function LoginPage() {
             className="text-sm"
             style={{
               fontFamily: "'DM Sans', system-ui, sans-serif",
-              color: "oklch(0.5 0.05 60)",
+              color: "oklch(0.55 0.04 60)",
             }}
           >
-            Sign in to your Acne Veda account
+            Sign in to continue your skin journey
           </p>
         </motion.div>
 
         {/* Form */}
         <motion.form
           onSubmit={handleLogin}
-          className="flex flex-col gap-4 mb-6"
-          initial={{ opacity: 0, y: 20 }}
+          className="flex flex-col gap-4"
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.12 }}
+          transition={{ delay: 0.18, duration: 0.45 }}
         >
           {/* Username */}
           <div className="flex flex-col gap-1.5">
             <label
-              htmlFor="username"
-              className="text-sm font-medium"
+              htmlFor="login-username"
+              className="text-xs font-semibold uppercase tracking-wider"
               style={{
                 fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: "oklch(0.32 0.07 140)",
+                color: "oklch(0.42 0.08 140)",
               }}
             >
               Username
             </label>
             <input
-              id="username"
-              data-ocid="login.input"
+              id="login-username"
               type="text"
+              data-ocid="login.input"
               autoComplete="username"
+              placeholder="Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Your username"
-              className="w-full px-4 py-3 rounded-2xl text-sm outline-none transition-all"
+              className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
               style={{
                 fontFamily: "'DM Sans', system-ui, sans-serif",
-                background: "oklch(1 0 0)",
-                border: "1.5px solid oklch(0.88 0.025 70)",
-                color: "oklch(0.2 0.04 50)",
-                fontSize: "16px",
-                boxShadow: "0 1px 4px -1px oklch(0.55 0.14 145 / 0.08)",
+                background: "oklch(0.99 0.006 80)",
+                border: "1.5px solid oklch(0.88 0.03 80)",
+                color: "oklch(0.28 0.08 140)",
               }}
               onFocus={(e) => {
-                e.currentTarget.style.borderColor =
-                  "oklch(0.55 0.14 145 / 0.6)";
-                e.currentTarget.style.boxShadow =
+                e.target.style.borderColor = "oklch(0.55 0.14 145)";
+                e.target.style.boxShadow =
                   "0 0 0 3px oklch(0.55 0.14 145 / 0.12)";
               }}
               onBlur={(e) => {
-                e.currentTarget.style.borderColor = "oklch(0.88 0.025 70)";
-                e.currentTarget.style.boxShadow =
-                  "0 1px 4px -1px oklch(0.55 0.14 145 / 0.08)";
+                e.target.style.borderColor = "oklch(0.88 0.03 80)";
+                e.target.style.boxShadow = "none";
               }}
             />
           </div>
@@ -196,51 +213,46 @@ export function LoginPage() {
           {/* Password */}
           <div className="flex flex-col gap-1.5">
             <label
-              htmlFor="password"
-              className="text-sm font-medium"
+              htmlFor="login-password"
+              className="text-xs font-semibold uppercase tracking-wider"
               style={{
                 fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: "oklch(0.32 0.07 140)",
+                color: "oklch(0.42 0.08 140)",
               }}
             >
               Password
             </label>
             <div className="relative">
               <input
-                id="password"
-                data-ocid="login.textarea"
+                id="login-password"
                 type={showPassword ? "text" : "password"}
+                data-ocid="login.input"
                 autoComplete="current-password"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-4 py-3 pr-12 rounded-2xl text-sm outline-none transition-all"
+                className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
                 style={{
                   fontFamily: "'DM Sans', system-ui, sans-serif",
-                  background: "oklch(1 0 0)",
-                  border: "1.5px solid oklch(0.88 0.025 70)",
-                  color: "oklch(0.2 0.04 50)",
-                  fontSize: "16px",
-                  boxShadow: "0 1px 4px -1px oklch(0.55 0.14 145 / 0.08)",
+                  background: "oklch(0.99 0.006 80)",
+                  border: "1.5px solid oklch(0.88 0.03 80)",
+                  color: "oklch(0.28 0.08 140)",
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor =
-                    "oklch(0.55 0.14 145 / 0.6)";
-                  e.currentTarget.style.boxShadow =
+                  e.target.style.borderColor = "oklch(0.55 0.14 145)";
+                  e.target.style.boxShadow =
                     "0 0 0 3px oklch(0.55 0.14 145 / 0.12)";
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.borderColor = "oklch(0.88 0.025 70)";
-                  e.currentTarget.style.boxShadow =
-                    "0 1px 4px -1px oklch(0.55 0.14 145 / 0.08)";
+                  e.target.style.borderColor = "oklch(0.88 0.03 80)";
+                  e.target.style.boxShadow = "none";
                 }}
               />
               <button
                 type="button"
-                data-ocid="login.toggle"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-lg transition-colors"
-                style={{ color: "oklch(0.55 0.06 140)" }}
+                onClick={() => setShowPassword((p) => !p)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-70"
+                style={{ color: "oklch(0.6 0.04 60)" }}
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -252,48 +264,40 @@ export function LoginPage() {
             </div>
           </div>
 
-          {/* Error */}
+          {/* Error message */}
           {error && (
-            <motion.div
+            <div
               data-ocid="login.error_state"
-              className="px-4 py-3 rounded-2xl text-sm"
+              className="rounded-xl px-4 py-3 text-sm"
               style={{
-                background: "oklch(0.97 0.04 27)",
-                border: "1px solid oklch(0.85 0.1 27)",
-                color: "oklch(0.45 0.18 27)",
                 fontFamily: "'DM Sans', system-ui, sans-serif",
+                background: "oklch(0.96 0.04 25)",
+                border: "1px solid oklch(0.85 0.08 25)",
+                color: "oklch(0.45 0.18 25)",
               }}
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
             >
               {error}
-            </motion.div>
+            </div>
           )}
 
-          {/* Sign In button */}
+          {/* Submit */}
           <button
             type="submit"
             data-ocid="login.submit_button"
-            disabled={loading || !username.trim() || !password || !actorReady}
-            className="w-full py-3.5 mt-2 rounded-full text-white font-semibold text-base transition-all active:scale-[0.98] hover:opacity-90"
+            disabled={loading || !actorReady || !username.trim() || !password}
+            className="w-full py-3.5 rounded-xl font-semibold text-sm text-white mt-2 transition-all active:scale-[0.98]"
             style={{
               fontFamily: "'DM Sans', system-ui, sans-serif",
-              background:
-                !loading && username.trim() && password && actorReady
-                  ? "oklch(0.65 0.2 35)"
-                  : "oklch(0.78 0.06 60)",
-              boxShadow:
-                !loading && username.trim() && password && actorReady
-                  ? "0 4px 20px -2px oklch(0.65 0.2 35 / 0.35), 0 1px 4px -1px oklch(0.65 0.2 35 / 0.2)"
-                  : "none",
+              background: "oklch(0.52 0.18 145)",
+              boxShadow: "0 4px 20px -2px oklch(0.52 0.18 145 / 0.32)",
               cursor:
-                loading || !username.trim() || !password || !actorReady
-                  ? "not-allowed"
-                  : "pointer",
+                !loading && actorReady && username.trim() && password
+                  ? "pointer"
+                  : "not-allowed",
               opacity:
-                loading || !username.trim() || !password || !actorReady
-                  ? 0.7
-                  : 1,
+                !loading && actorReady && username.trim() && password
+                  ? 1
+                  : 0.65,
             }}
           >
             {loading ? (

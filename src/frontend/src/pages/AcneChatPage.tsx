@@ -1013,6 +1013,22 @@ export function AcneChatPage() {
           <ResultsScreen
             diagnosis={diagnosis}
             triggers={triggers}
+            answers={answers}
+            onGoToRoutine={() => {
+              const acneType = (answers[2] as string) ?? "Inflammatory Acne";
+              const skinType = (answers[4] as string) ?? "Combination";
+              sessionStorage.setItem(
+                "acnevedaResults",
+                JSON.stringify({
+                  acneType,
+                  skinType,
+                  phase: "Phase 1: Cleanse",
+                  location: (answers[1] as string) ?? "",
+                  triggers: (answers[5] as string[]) ?? [],
+                }),
+              );
+              navigate({ to: "/main" });
+            }}
             onStartNew={() => navigate({ to: "/assessment/step1" })}
           />
         )}
@@ -1036,10 +1052,14 @@ export function AcneChatPage() {
 function ResultsScreen({
   diagnosis,
   triggers,
+  answers: _answers,
+  onGoToRoutine,
   onStartNew,
 }: {
   diagnosis: string;
   triggers?: string[];
+  answers?: Record<number, string | string[]>;
+  onGoToRoutine: () => void;
   onStartNew: () => void;
 }) {
   const [activeTab, setActiveTab] = useState<"morning" | "night">("morning");
@@ -1416,7 +1436,7 @@ function ResultsScreen({
         <motion.button
           type="button"
           data-ocid="acne-chat.primary_button"
-          onClick={onStartNew}
+          onClick={onGoToRoutine}
           className="w-full py-3.5 rounded-2xl font-semibold text-sm transition-all active:scale-[0.98] hover:opacity-90"
           style={{
             fontFamily: "'DM Sans', system-ui, sans-serif",
@@ -1428,17 +1448,12 @@ function ResultsScreen({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.42 }}
         >
-          Start New Assessment
+          Go to My Routine →
         </motion.button>
         <motion.button
           type="button"
           data-ocid="acne-chat.secondary_button"
-          onClick={() =>
-            toast("Coming Soon", {
-              description: "Save & Download will be available soon.",
-              duration: 2200,
-            })
-          }
+          onClick={onStartNew}
           className="w-full py-3.5 rounded-2xl font-semibold text-sm transition-all active:scale-[0.98] hover:opacity-90"
           style={{
             fontFamily: "'DM Sans', system-ui, sans-serif",
@@ -1448,9 +1463,9 @@ function ResultsScreen({
           }}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.48 }}
         >
-          💾 Save &amp; Download
+          Start New Assessment
         </motion.button>
       </div>
 
