@@ -2,54 +2,45 @@ import Map "mo:core/Map";
 import Text "mo:core/Text";
 import Runtime "mo:core/Runtime";
 
-
-
 actor {
   public type PasswordHash = Text;
 
-  // User record with only a password hash for simplicity
   type User = {
     passwordHash : PasswordHash;
   };
 
-  // Map of username to User record
-  let users = Map.empty<Text, User>();
+  // Stable storage so data survives canister upgrades
+  stable var userEntries : [(Text, User)] = [];
+  stable var historyEntries : [(Text, Bool)] = [];
 
-  // Map of username to history status
-  let history = Map.empty<Text, Bool>();
+  // Working maps rebuilt from stable storage
+  var users : Map.Map<Text, User> = Map.fromArray(userEntries);
+  var history : Map.Map<Text, Bool> = Map.fromArray(historyEntries);
+
+  system func preupgrade() {
+    userEntries := users.toArray();
+    historyEntries := history.toArray();
+  };
+
+  system func postupgrade() {
+    users := Map.fromArray(userEntries);
+    history := Map.fromArray(historyEntries);
+  };
 
   // Register a new user
-  // Inputs:
-  //   username : Text - user provided username
-  //   passwordHash : Text - SHA-256 password hash (hex string) provided by frontend
-  // Returns: async () on success
-  // Throws: "Username already taken" if username is already registered
-  public shared ({ caller }) func registerUser(username : Text, passwordHash : PasswordHash) : async () {
+  public shared func registerUser(username : Text, passwordHash : PasswordHash) : async () {
     if (users.containsKey(username)) {
       Runtime.trap("Username already taken");
     };
-    let user = {
-      passwordHash;
-    };
-    users.add(username, user);
+    users.add(username, { passwordHash });
   };
 
-  // Log in a user - match username and password hash
-  // Inputs:
-  //   username : Text - user provided username
-  //   passwordHash : Text - SHA-256 password hash (hex string) provided by frontend
-  // Returns: async () on success
-  // Throws: "User not found" if username does not exist
-  // Throws: "Incorrect password" if password hash does not match
-  public query ({ caller }) func login(username : Text, passwordHash : PasswordHash) : async () {
+  // Log in a user
+  public query func login(username : Text, passwordHash : PasswordHash) : async () {
     switch (users.get(username)) {
-      case (null) {
-        Runtime.trap("User not found");
-      };
+      case (null) { Runtime.trap("User not found") };
       case (?user) {
-        if (user.passwordHash == passwordHash) {
-          ();
-        } else {
+        if (user.passwordHash != passwordHash) {
           Runtime.trap("Incorrect password");
         };
       };
@@ -57,11 +48,7 @@ actor {
   };
 
   // Add an assessment to the history
-  // Inputs:
-  //   username : Text - user provided username
-  // Returns: async () on success (does not indicate if user previously had history)
-  // Throws: "User not found" if username does not exist
-  public shared ({ caller }) func addAssessmentHistory(username : Text) : async () {
+  public shared func addAssessmentHistory(username : Text) : async () {
     if (not users.containsKey(username)) {
       Runtime.trap("User not found");
     };
@@ -69,16 +56,12 @@ actor {
   };
 
   // Check if a user has any assessment history
-  // Inputs:
-  //   username : Text - user provided username
-  // Returns: async Bool - true if user has history, false if not
-  // Throws: "User not found" if username does not exist
-  public query ({ caller }) func hasHistory(username : Text) : async Bool {
+  public query func hasHistory(username : Text) : async Bool {
     if (not users.containsKey(username)) {
       Runtime.trap("User not found");
     };
     switch (history.get(username)) {
-      case (?hasHistory) { hasHistory };
+      case (?h) { h };
       case (null) { false };
     };
   };
