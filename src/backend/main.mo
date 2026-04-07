@@ -57,9 +57,6 @@ actor {
 
   // Check if a user has any assessment history
   public query func hasHistory(username : Text) : async Bool {
-    if (not users.containsKey(username)) {
-      Runtime.trap("User not found");
-    };
     switch (history.get(username)) {
       case (?h) { h };
       case (null) { false };
