@@ -149,7 +149,7 @@ export function Step3Chat() {
                 color: "oklch(0.22 0.07 140)",
               }}
             >
-              Dr. Vaidya \uD83D\uDE0A
+              Dr. Vaidya 😊
             </h2>
             <p
               className="text-xs"
@@ -243,9 +243,9 @@ export function Step3Chat() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.55 + idx * 0.08 }}
                     >
-                      {option === "Skin" && "\uD83C\uDF3F "}
-                      {option === "Hair" && "\u2728 "}
-                      {option === "Both" && "\uD83D\uDC9A "}
+                      {option === "Skin" && "🌿 "}
+                      {option === "Hair" && "✨ "}
+                      {option === "Both" && "💚 "}
                       {option}
                     </motion.button>
                   ),
@@ -293,7 +293,7 @@ export function Step3Chat() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.0 }}
         >
-          \u00A9 {new Date().getFullYear()}. Built with \u2764\uFE0F using{" "}
+          © {new Date().getFullYear()}. Built with ❤️ using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
             target="_blank"

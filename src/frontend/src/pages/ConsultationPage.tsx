@@ -44,9 +44,9 @@ type HairConcern =
 
 type Severity = "Mild" | "Moderate" | "Severe";
 type SkinType = "Oily" | "Dry" | "Combination" | "Sensitive" | "Not sure";
-type Sleep = "Less than 5 hours" | "5\u20137 hours" | "7\u20139 hours";
+type Sleep = "Less than 5 hours" | "5–7 hours" | "7–9 hours";
 type Stress = "Low" | "Moderate" | "High";
-type Water = "Less than 1L" | "1\u20132L" | "More than 2L";
+type Water = "Less than 1L" | "1–2L" | "More than 2L";
 type Digestion = "Good" | "Bloating" | "Constipation" | "Irregular";
 type DietSkin =
   | "Oily / Fried foods"
@@ -70,7 +70,7 @@ type SunExposure =
   | "High (daily outdoor exposure)";
 type Sunscreen = "Yes, daily" | "Sometimes" | "Never";
 type SleepQuality = "Very poor" | "Poor" | "Average" | "Good";
-type ScreenTime = "Less than 3hrs" | "3\u20136hrs" | "More than 6hrs";
+type ScreenTime = "Less than 3hrs" | "3–6hrs" | "More than 6hrs";
 type AgingType = "Fine lines" | "Loose/sagging skin" | "Both";
 
 type ScalpType = "Oily scalp" | "Dry scalp" | "Normal";
@@ -79,11 +79,7 @@ type FallPattern =
   | "Gradual (over months)"
   | "Seasonal";
 type Protein = "Low" | "Moderate" | "High";
-type OilingFreq =
-  | "Never"
-  | "Occasionally"
-  | "Weekly"
-  | "Regular (2\u20133x/week)";
+type OilingFreq = "Never" | "Occasionally" | "Weekly" | "Regular (2–3x/week)";
 type WashFreq = "Daily" | "Alternate days" | "Weekly";
 type ScalpCondition = "Itchy" | "Flaky" | "Oily" | "Normal";
 
@@ -166,15 +162,15 @@ function analyzeResults(
   else if (severity === "Severe") score += 20;
 
   if (sleep === "Less than 5 hours") score += 10;
-  else if (sleep === "5\u20137 hours") score += 3;
-  else if (sleep === "7\u20139 hours") score -= 8;
+  else if (sleep === "5–7 hours") score += 3;
+  else if (sleep === "7–9 hours") score -= 8;
 
   if (stress === "High") score += 10;
   else if (stress === "Moderate") score += 4;
   else if (stress === "Low") score -= 8;
 
   if (water === "Less than 1L") score += 8;
-  else if (water === "1\u20132L") score += 2;
+  else if (water === "1–2L") score += 2;
   else if (water === "More than 2L") score -= 5;
 
   if (digestion === "Constipation" || digestion === "Irregular") score += 8;
@@ -210,21 +206,21 @@ function analyzeResults(
     if (c === "Acne / Pimples" || c === "Pigmentation / Dark spots") {
       dosha = {
         name: "Pitta",
-        icon: "\uD83D\uDD25",
+        icon: "🔥",
         description:
           "Excess heat (Pitta) is driving inflammation, redness, and breakouts. Cooling practices and anti-inflammatory foods will restore balance.",
       };
     } else if (c === "Wrinkles / Ageing" || c === "Dull / Uneven skin") {
       dosha = {
         name: "Vata",
-        icon: "\uD83C\uDF2C\uFE0F",
+        icon: "🌬️",
         description:
           "Excess Vata is causing dryness, fine lines, and loss of elasticity. Nourishing oils, warm foods, and grounding practices will help.",
       };
     } else {
       dosha = {
         name: "Kapha",
-        icon: "\uD83D\uDCA7",
+        icon: "💧",
         description:
           "Kapha accumulation is leading to oiliness and dullness. Stimulating circulation and a lighter diet will restore radiance.",
       };
@@ -234,21 +230,21 @@ function analyzeResults(
     if (c === "Hair fall" || c === "Thinning hair") {
       dosha = {
         name: "Vata",
-        icon: "\uD83C\uDF2C\uFE0F",
+        icon: "🌬️",
         description:
           "Elevated Vata is weakening hair follicles and causing hair fall. Warm oiling, protein-rich diet, and stress management are key.",
       };
     } else if (c === "Premature greying" || c === "Scalp issues") {
       dosha = {
         name: "Pitta",
-        icon: "\uD83D\uDD25",
+        icon: "🔥",
         description:
           "Pitta excess is triggering early greying and scalp inflammation. Cooling herbs like Bhringraj and Amla will nourish deeply.",
       };
     } else {
       dosha = {
         name: "Kapha",
-        icon: "\uD83D\uDCA7",
+        icon: "💧",
         description:
           "Kapha excess is causing dandruff and oily scalp build-up. Regular cleansing with light, stimulating herbs will restore scalp health.",
       };
@@ -264,12 +260,12 @@ function analyzeResults(
     if (c === "Acne / Pimples") {
       morningRoutine = [
         "Wash face with Neem + Tulsi cleanser (lukewarm water)",
-        "Apply Rose water toner \u2014 balances pH, cools Pitta",
-        "Lightweight Niacinamide serum \u2014 controls sebum",
+        "Apply Rose water toner — balances pH, cools Pitta",
+        "Lightweight Niacinamide serum — controls sebum",
         "Broad-spectrum SPF 30+ sunscreen (non-comedogenic)",
       ];
       nightRoutine = [
-        "Double-cleanse: oil cleanser \u2192 Neem facewash",
+        "Double-cleanse: oil cleanser → Neem facewash",
         "Apply Triphala toner for antioxidant protection",
         "Spot-treat active pimples with Neem gel or Salicylic acid",
         "Light, non-comedogenic moisturizer (aloe vera-based)",
@@ -277,34 +273,34 @@ function analyzeResults(
     } else if (c === "Pigmentation / Dark spots") {
       morningRoutine = [
         "Gentle Vitamin C cleanser to brighten and protect",
-        "Kojic acid + Niacinamide serum \u2014 fades pigmentation",
-        "SPF 50+ sunscreen \u2014 critical for dark spot prevention",
+        "Kojic acid + Niacinamide serum — fades pigmentation",
+        "SPF 50+ sunscreen — critical for dark spot prevention",
         "Drink warm Amla juice on empty stomach",
       ];
       nightRoutine = [
         "Cleanse with Milk + Honey based cleanser",
-        "Kumkumadi oil \u2014 traditional Ayurvedic pigmentation treatment",
-        "Glycolic acid exfoliant (2\u20133 times per week only)",
+        "Kumkumadi oil — traditional Ayurvedic pigmentation treatment",
+        "Glycolic acid exfoliant (2–3 times per week only)",
         "Rich moisturizer with Licorice root extract",
       ];
     } else if (c === "Dark circles") {
       morningRoutine = [
-        "Cool water splash \u2014 reduces puffiness instantly",
+        "Cool water splash — reduces puffiness instantly",
         "Apply chilled rose water-soaked cotton pads for 5 mins",
-        "Vitamin C + Caffeine eye serum \u2014 brightens dark circles",
-        "Sunscreen (don\u2019t skip around the eyes!)",
+        "Vitamin C + Caffeine eye serum — brightens dark circles",
+        "Sunscreen (don’t skip around the eyes!)",
       ];
       nightRoutine = [
         "Gentle milk-based cleanser (no harsh rubbing)",
-        "Almond oil massage around eyes \u2014 clockwise, light pressure",
+        "Almond oil massage around eyes — clockwise, light pressure",
         "Retinol eye cream (2x weekly for collagen boost)",
         "Sleep on your back to reduce fluid pooling",
       ];
     } else if (c === "Wrinkles / Ageing") {
       morningRoutine = [
         "Antioxidant cleanser with Turmeric and Vitamin E",
-        "Hyaluronic acid serum \u2014 plumps fine lines",
-        "Vitamin C serum \u2014 protects from free radicals",
+        "Hyaluronic acid serum — plumps fine lines",
+        "Vitamin C serum — protects from free radicals",
         "High-SPF broad-spectrum sunscreen (the #1 anti-ageing step)",
       ];
       nightRoutine = [
@@ -322,8 +318,8 @@ function analyzeResults(
         "SPF 30+ moisturizing sunscreen",
       ];
       nightRoutine = [
-        "Double cleanse \u2014 remove all impurities",
-        "AHA exfoliant (glycolic/lactic acid) \u2014 2x weekly",
+        "Double cleanse — remove all impurities",
+        "AHA exfoliant (glycolic/lactic acid) — 2x weekly",
         "Brightening serum with Saffron or Turmeric extract",
         "Overnight mask with Honey and Aloe vera",
       ];
@@ -335,42 +331,42 @@ function analyzeResults(
       morningRoutine = [
         "Scalp massage with warm Bhringraj oil (5 mins)",
         "Take Biotin + Iron supplement with breakfast",
-        "Use a wide-tooth comb \u2014 never brush wet hair",
-        "Tie loosely \u2014 avoid tight hairstyles that stress follicles",
+        "Use a wide-tooth comb — never brush wet hair",
+        "Tie loosely — avoid tight hairstyles that stress follicles",
       ];
       nightRoutine = [
         "Apply Onion seed oil or Castor oil to scalp",
         "Gentle circular massage for 10 minutes",
         "Sleep on a silk pillowcase to reduce friction",
-        "Take Ashwagandha before bed \u2014 reduces cortisol",
+        "Take Ashwagandha before bed — reduces cortisol",
       ];
     } else if (c === "Dandruff" || c === "Scalp issues") {
       morningRoutine = [
-        "Anti-dandruff shampoo with Neem or Ketoconazole (2\u20133x/week)",
+        "Anti-dandruff shampoo with Neem or Ketoconazole (2–3x/week)",
         "Apply diluted Tea Tree oil to affected areas",
-        "Stay hydrated \u2014 dry scalp worsens dandruff",
+        "Stay hydrated — dry scalp worsens dandruff",
         st === "Oily scalp"
           ? "Avoid heavy conditioners on scalp"
           : "Use scalp-soothing conditioner on ends",
       ];
       nightRoutine = [
         "Pre-wash treatment: Coconut oil + few drops of Neem oil",
-        "Leave for 1\u20132 hours before washing",
-        "Triphala powder scalp mask (1x weekly) \u2014 detoxifies",
+        "Leave for 1–2 hours before washing",
+        "Triphala powder scalp mask (1x weekly) — detoxifies",
         "Ensure your pillowcase is clean and washed weekly",
       ];
     } else if (c === "Dry / frizzy hair") {
       morningRoutine = [
         "Leave-in conditioner with Argan or Amla oil",
-        "Microfiber towel \u2014 never rough-dry with regular towel",
-        "Air dry when possible \u2014 heat damages keratin",
+        "Microfiber towel — never rough-dry with regular towel",
+        "Air dry when possible — heat damages keratin",
         "Serum with Aloe vera for frizz control",
       ];
       nightRoutine = [
         "Deep condition mask with Egg, Honey and Coconut oil",
         "Braid loosely before sleeping to prevent tangles",
         "Silk or satin pillowcase to preserve moisture",
-        "Brahmi oil scalp massage \u2014 2x weekly for deep nourishment",
+        "Brahmi oil scalp massage — 2x weekly for deep nourishment",
       ];
     } else {
       morningRoutine = [
@@ -383,7 +379,7 @@ function analyzeResults(
         "Coconut + Amla oil warm scalp massage",
         "Comb gently from tips to roots",
         "Silk pillowcase for hair protection",
-        "Keep scalp clean \u2014 wash 2\u20133x weekly",
+        "Keep scalp clean — wash 2–3x weekly",
       ];
     }
   }
@@ -391,10 +387,10 @@ function analyzeResults(
   let sleepTip: string;
   if (sleep === "Less than 5 hours")
     sleepTip =
-      "You're getting critically low sleep. Aim to be in bed by 10:30 PM \u2014 skin and hair cells regenerate between 11 PM\u20132 AM. Start with a 30-min earlier bedtime this week.";
-  else if (sleep === "5\u20137 hours")
+      "You're getting critically low sleep. Aim to be in bed by 10:30 PM — skin and hair cells regenerate between 11 PM–2 AM. Start with a 30-min earlier bedtime this week.";
+  else if (sleep === "5–7 hours")
     sleepTip =
-      "You're close! Getting to 7\u20138 hours will significantly improve your results. Try Brahmi milk (1 tsp Brahmi powder in warm milk) 30 minutes before bed.";
+      "You're close! Getting to 7–8 hours will significantly improve your results. Try Brahmi milk (1 tsp Brahmi powder in warm milk) 30 minutes before bed.";
   else
     sleepTip =
       "Great sleep schedule! Maintain this consistency. Ensure your bedroom is cool, dark, and screen-free 30 minutes before sleep for deepest rest.";
@@ -561,7 +557,7 @@ function getSkinSteps(skinConcern?: SkinConcern): Step[] {
   const base: Step[] = [
     {
       id: "skinConcern",
-      question: "Tell me your main skin concern \uD83C\uDF3F",
+      question: "Tell me your main skin concern 🌿",
       options: [
         "Acne / Pimples",
         "Pigmentation / Dark spots",
@@ -583,8 +579,8 @@ function getSkinSteps(skinConcern?: SkinConcern): Step[] {
     },
     {
       id: "sleep",
-      question: "How many hours do you sleep per night? \uD83D\uDE34",
-      options: ["Less than 5 hours", "5\u20137 hours", "7\u20139 hours"],
+      question: "How many hours do you sleep per night? 😴",
+      options: ["Less than 5 hours", "5–7 hours", "7–9 hours"],
     },
     {
       id: "stress",
@@ -593,8 +589,8 @@ function getSkinSteps(skinConcern?: SkinConcern): Step[] {
     },
     {
       id: "water",
-      question: "How much water do you drink daily? \uD83D\uDCA7",
-      options: ["Less than 1L", "1\u20132L", "More than 2L"],
+      question: "How much water do you drink daily? 💧",
+      options: ["Less than 1L", "1–2L", "More than 2L"],
     },
     {
       id: "digestion",
@@ -613,7 +609,7 @@ function getSkinSteps(skinConcern?: SkinConcern): Step[] {
     },
     {
       id: "routine",
-      question: "Do you follow a skincare routine? \u2728",
+      question: "Do you follow a skincare routine? ✨",
       options: [
         "No routine",
         "Basic (facewash only)",
@@ -645,7 +641,7 @@ function getSkinSteps(skinConcern?: SkinConcern): Step[] {
     });
     base.push({
       id: "sunscreen",
-      question: "Do you use sunscreen? \u2600\uFE0F",
+      question: "Do you use sunscreen? ☀️",
       options: ["Yes, daily", "Sometimes", "Never"],
     });
   } else if (skinConcern === "Dark circles") {
@@ -656,8 +652,8 @@ function getSkinSteps(skinConcern?: SkinConcern): Step[] {
     });
     base.push({
       id: "screenTime",
-      question: "How many hours of screen time do you have daily? \uD83D\uDCF1",
-      options: ["Less than 3hrs", "3\u20136hrs", "More than 6hrs"],
+      question: "How many hours of screen time do you have daily? 📱",
+      options: ["Less than 3hrs", "3–6hrs", "More than 6hrs"],
     });
   } else if (skinConcern === "Wrinkles / Ageing") {
     base.push({
@@ -682,7 +678,7 @@ function getHairSteps(hairConcern?: HairConcern): Step[] {
   const base: Step[] = [
     {
       id: "hairConcern",
-      question: "Tell me your main hair concern \uD83D\uDC87",
+      question: "Tell me your main hair concern 💇",
       options: [
         "Hair fall",
         "Dandruff",
@@ -721,8 +717,8 @@ function getHairSteps(hairConcern?: HairConcern): Step[] {
   base.push(
     {
       id: "sleep",
-      question: "How many hours do you sleep per night? \uD83D\uDE34",
-      options: ["Less than 5 hours", "5\u20137 hours", "7\u20139 hours"],
+      question: "How many hours do you sleep per night? 😴",
+      options: ["Less than 5 hours", "5–7 hours", "7–9 hours"],
     },
     {
       id: "stress",
@@ -731,18 +727,18 @@ function getHairSteps(hairConcern?: HairConcern): Step[] {
     },
     {
       id: "water",
-      question: "How much water do you drink daily? \uD83D\uDCA7",
-      options: ["Less than 1L", "1\u20132L", "More than 2L"],
+      question: "How much water do you drink daily? 💧",
+      options: ["Less than 1L", "1–2L", "More than 2L"],
     },
     {
       id: "protein",
-      question: "How is your protein intake? \uD83E\uDD5A",
+      question: "How is your protein intake? 🥚",
       options: ["Low", "Moderate", "High"],
     },
     {
       id: "oilingFreq",
       question: "How often do you oil your hair?",
-      options: ["Never", "Occasionally", "Weekly", "Regular (2\u20133x/week)"],
+      options: ["Never", "Occasionally", "Weekly", "Regular (2–3x/week)"],
     },
     {
       id: "washFreq",
@@ -1119,7 +1115,7 @@ export function ConsultationPage() {
           {
             id: "done",
             from: "bot",
-            text: "\u2705 Great! I have all the information I need. Generating your personalized report now...",
+            text: "✅ Great! I have all the information I need. Generating your personalized report now...",
           },
         ]);
         setTimeout(() => setShowReport(true), 1200);
@@ -1188,7 +1184,7 @@ export function ConsultationPage() {
                   fontFamily: "DM Sans, sans-serif",
                 }}
               >
-                Your Personalized Report \uD83D\uDCCA
+                Your Personalized Report 📊
               </p>
             </div>
             <div className="ml-auto">
@@ -1253,13 +1249,13 @@ export function ConsultationPage() {
           >
             <InfoRow
               label={isHair ? "Hair Concern" : "Skin Concern"}
-              value={concernLabel || "\u2014"}
+              value={concernLabel || "—"}
             />
             <InfoRow
               label={isHair ? "Scalp Type" : "Skin Type"}
-              value={typeLabel || "\u2014"}
+              value={typeLabel || "—"}
             />
-            <InfoRow label="Severity" value={severity || "\u2014"} />
+            <InfoRow label="Severity" value={severity || "—"} />
             {!isHair && skinAnswers.stress && (
               <InfoRow label="Stress Level" value={skinAnswers.stress} />
             )}
@@ -1448,7 +1444,7 @@ export function ConsultationPage() {
                     letterSpacing: "0.05em",
                   }}
                 >
-                  \uD83D\uDEAB Avoid
+                  🚫 Avoid
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {result.foodsToAvoid.map((food) => (
@@ -1481,7 +1477,7 @@ export function ConsultationPage() {
                     letterSpacing: "0.05em",
                   }}
                 >
-                  \u2705 Include
+                  ✅ Include
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {result.foodsToInclude.map((food) => (
@@ -1666,7 +1662,7 @@ export function ConsultationPage() {
               fontFamily: "DM Sans, sans-serif",
             }}
           >
-            \u00A9 {new Date().getFullYear()}. Built with \u2764\uFE0F using{" "}
+            © {new Date().getFullYear()}. Built with ❤️ using{" "}
             <a
               href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
               target="_blank"
@@ -1720,7 +1716,7 @@ export function ConsultationPage() {
                 boxShadow: "0 8px 32px oklch(0.52 0.18 145 / 0.35)",
               }}
             >
-              <span style={{ fontSize: "32px" }}>\uD83C\uDF3F</span>
+              <span style={{ fontSize: "32px" }}>🌿</span>
             </div>
           </div>
           <h1
@@ -1775,7 +1771,10 @@ export function ConsultationPage() {
                 className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                 style={{ background: "oklch(0.94 0.07 145 / 0.6)" }}
               >
-                <span style={{ fontSize: "24px" }}>\uD83C\uDF3F</span>
+                <Leaf
+                  className="w-6 h-6"
+                  style={{ color: "oklch(0.45 0.18 145)" }}
+                />
               </div>
               <div className="text-left">
                 <p
@@ -1821,7 +1820,7 @@ export function ConsultationPage() {
                 className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                 style={{ background: "oklch(0.94 0.06 290 / 0.5)" }}
               >
-                <span style={{ fontSize: "24px" }}>\uD83D\uDC87</span>
+                <span style={{ fontSize: "24px" }}>💇</span>
               </div>
               <div className="text-left">
                 <p
@@ -1851,11 +1850,7 @@ export function ConsultationPage() {
             </motion.button>
           </div>
           <div className="flex justify-center gap-4 mt-8">
-            {[
-              "\uD83D\uDD2C AI Analysis",
-              "\uD83C\uDF3F Ayurvedic",
-              "\uD83D\uDD12 Private",
-            ].map((badge) => (
+            {["🔬 AI Analysis", "🌿 Ayurvedic", "🔒 Private"].map((badge) => (
               <div
                 key={badge}
                 style={{
@@ -1881,7 +1876,7 @@ export function ConsultationPage() {
             fontFamily: "DM Sans, sans-serif",
           }}
         >
-          \u00A9 {new Date().getFullYear()}. Built with \u2764\uFE0F using{" "}
+          © {new Date().getFullYear()}. Built with ❤️ using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
             target="_blank"

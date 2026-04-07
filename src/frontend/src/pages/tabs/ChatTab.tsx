@@ -17,7 +17,7 @@ type SmartReply = { reply: string; chips: string[] };
 
 const REPLY_ROUTINE: SmartReply = {
   reply:
-    "Great to hear you're being consistent! \uD83C\uDF3F Following your routine daily is the most important step. Keep it up \u2014 consistency is key for clearing acne naturally.",
+    "Great to hear you're being consistent! 🌿 Following your routine daily is the most important step. Keep it up — consistency is key for clearing acne naturally.",
   chips: [
     "What are the steps again?",
     "Can I skip moisturizer?",
@@ -26,47 +26,47 @@ const REPLY_ROUTINE: SmartReply = {
 };
 const REPLY_NO_ROUTINE: SmartReply = {
   reply:
-    "No worries! It happens. Try to get back on track today \u2014 even doing just the cleanser step is better than nothing. \uD83D\uDC9A Small steps matter.",
+    "No worries! It happens. Try to get back on track today — even doing just the cleanser step is better than nothing. 💚 Small steps matter.",
   chips: ["Remind me the steps", "Any new breakouts?", "Diet tips?"],
 };
 const REPLY_BREAKOUT: SmartReply = {
   reply:
-    "For new breakouts, apply the Neem Spot Corrector directly on the spot before bed. Avoid touching your face and try to keep your pillowcase clean. \uD83C\uDF3F",
+    "For new breakouts, apply the Neem Spot Corrector directly on the spot before bed. Avoid touching your face and try to keep your pillowcase clean. 🌿",
   chips: ["How long to heal?", "Can I pop it?", "Diet tips?"],
 };
 const REPLY_NO_BREAKOUT: SmartReply = {
   reply:
-    "That's wonderful progress! \uD83C\uDF89 Your Ayurvedic routine is working. Keep maintaining it and you'll continue to see improvement.",
+    "That's wonderful progress! 🎉 Your Ayurvedic routine is working. Keep maintaining it and you'll continue to see improvement.",
   chips: ["Show my progress", "When to advance phase?", "Maintenance tips?"],
 };
 const REPLY_DIET: SmartReply = {
   reply:
-    "For acne-prone skin, avoid spicy, oily, and processed foods. Include turmeric milk, amla, and plenty of water. Cooling foods like cucumber and coconut water help balance pitta dosha. \uD83E\uDD57",
+    "For acne-prone skin, avoid spicy, oily, and processed foods. Include turmeric milk, amla, and plenty of water. Cooling foods like cucumber and coconut water help balance pitta dosha. 🥗",
   chips: ["What foods to avoid?", "Best herbal teas?", "Gut-skin connection?"],
 };
 const REPLY_NEEM: SmartReply = {
   reply:
-    "Neem is one of the most powerful Ayurvedic herbs for acne. It has anti-bacterial and anti-inflammatory properties. Use the Neem Acne Gel at night and the Neem Cleanser in the morning. \uD83C\uDF3F",
+    "Neem is one of the most powerful Ayurvedic herbs for acne. It has anti-bacterial and anti-inflammatory properties. Use the Neem Acne Gel at night and the Neem Cleanser in the morning. 🌿",
   chips: ["How long to use?", "Any side effects?", "Diet tips?"],
 };
 const REPLY_STRESS: SmartReply = {
   reply:
-    "Stress triggers cortisol which worsens acne \u2014 very common! Try Pranayama (breathing exercises) for 5 mins daily. Ashwagandha is also excellent for stress-related acne. \uD83E\uDDD8",
+    "Stress triggers cortisol which worsens acne — very common! Try Pranayama (breathing exercises) for 5 mins daily. Ashwagandha is also excellent for stress-related acne. 🧘",
   chips: ["Stress management tips", "Herbal supplements?", "Sleep tips?"],
 };
 const REPLY_SLEEP: SmartReply = {
   reply:
-    "Aim for 7\u20138 hours of sleep. Skin repairs itself at night \u2014 that's why the night routine is so important. Try drinking Brahmi milk before bed for better sleep quality. \uD83C\uDF19",
+    "Aim for 7–8 hours of sleep. Skin repairs itself at night — that's why the night routine is so important. Try drinking Brahmi milk before bed for better sleep quality. 🌙",
   chips: ["Night routine tips", "Stress management", "Diet tips?"],
 };
 const REPLY_OIL: SmartReply = {
   reply:
-    "For oily skin, use the Oil Control Serum in the morning and avoid heavy moisturizers. Applying rose water as a toner helps balance sebum production naturally. \uD83D\uDCA7",
+    "For oily skin, use the Oil Control Serum in the morning and avoid heavy moisturizers. Applying rose water as a toner helps balance sebum production naturally. 💧",
   chips: ["Best toner?", "Diet tips?", "Routine steps?"],
 };
 const REPLY_SCAR: SmartReply = {
   reply:
-    "For acne scars, Kumkumadi oil is the gold standard in Ayurveda. Apply at night after the Neem Gel. Consistent use for 8\u201312 weeks shows visible results. \uD83C\uDF38",
+    "For acne scars, Kumkumadi oil is the gold standard in Ayurveda. Apply at night after the Neem Gel. Consistent use for 8–12 weeks shows visible results. 🌸",
   chips: ["How to apply?", "How long?", "Any products?"],
 };
 const DEFAULT_CHIPS: string[] = [
@@ -112,7 +112,7 @@ function getBotResponse(text: string): SmartReply {
   if (lower.includes("routine") || lower.includes("step")) return REPLY_ROUTINE;
   return {
     reply:
-      "Great question! Based on Ayurvedic principles, I'd recommend focusing on your daily routine consistently. Each skin type needs personalized care \u2014 your treatment plan has been tailored just for you. \uD83C\uDF3F Is there anything specific about your skin you'd like to know?",
+      "Great question! Based on Ayurvedic principles, I'd recommend focusing on your daily routine consistently. Each skin type needs personalized care — your treatment plan has been tailored just for you. 🌿 Is there anything specific about your skin you'd like to know?",
     chips: DEFAULT_CHIPS,
   };
 }
@@ -123,7 +123,7 @@ export function ChatTab() {
     {
       id: "welcome",
       from: "bot",
-      text: "Namaste! \uD83D\uDE4F I'm Dr. Vaidya AI, your Ayurvedic skin advisor. I'm here to help you with your skincare journey. Let me start with your daily check-in:",
+      text: "Namaste! 🙏 I'm Dr. Vaidya AI, your Ayurvedic skin advisor. I'm here to help you with your skincare journey. Let me start with your daily check-in:",
     },
   ]);
   const [chips, setChips] = useState<Chip[]>([
@@ -188,7 +188,7 @@ export function ChatTab() {
               AI Dermatology Chat
             </h1>
             <p className="text-white/70 text-xs">
-              Dr. Vaidya AI \u2022 Ayurvedic Expert
+              Dr. Vaidya AI • Ayurvedic Expert
             </p>
           </div>
           <div
@@ -232,7 +232,7 @@ export function ChatTab() {
               lineHeight: 1.2,
             }}
           >
-            \uD83C\uDF3F Start a New Consultation
+            🌿 Start a New Consultation
           </p>
           <p
             style={{
@@ -257,7 +257,7 @@ export function ChatTab() {
             whiteSpace: "nowrap",
           }}
         >
-          Start \u2192
+          Start →
         </button>
       </motion.div>
 

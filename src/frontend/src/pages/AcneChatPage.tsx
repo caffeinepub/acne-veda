@@ -269,7 +269,7 @@ export function AcneChatPage() {
           ...prev,
           {
             from: "doctor",
-            text: "Great! Now let\u2019s do an AI skin scan for even more accurate results. \ud83d\udcf8",
+            text: "Great! Now let’s do an AI skin scan for even more accurate results. 📸",
           },
         ]);
         setTimeout(() => {
