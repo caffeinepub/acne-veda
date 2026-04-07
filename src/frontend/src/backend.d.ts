@@ -1,16 +1,31 @@
 import type { Principal } from "@icp-sdk/core/principal";
-export interface Some<T> {
-    __kind__: "Some";
-    value: T;
+
+export interface ConsultationResult {
+  flowType: string;
+  conditionScore: bigint;
+  primaryConcern: string;
+  severity: string;
+  doshaImbalance: string;
+  rootCauses: string;
+  reportJson: string;
+  timestamp: bigint;
 }
-export interface None {
-    __kind__: "None";
-}
-export type Option<T> = Some<T> | None;
-export type PasswordHash = string;
+
 export interface backendInterface {
-    addAssessmentHistory(username: string): Promise<void>;
-    hasHistory(username: string): Promise<boolean>;
-    login(username: string, passwordHash: PasswordHash): Promise<void>;
-    registerUser(username: string, passwordHash: PasswordHash): Promise<void>;
+  registerUser: (username: string, passwordHash: string) => Promise<void>;
+  login: (username: string, passwordHash: string) => Promise<void>;
+  addAssessmentHistory: (username: string) => Promise<void>;
+  hasHistory: (username: string) => Promise<boolean>;
+  saveConsultationResult: (
+    username: string,
+    flowType: string,
+    conditionScore: bigint,
+    primaryConcern: string,
+    severity: string,
+    doshaImbalance: string,
+    rootCauses: string,
+    reportJson: string,
+    timestamp: bigint
+  ) => Promise<void>;
+  getConsultationResults: (username: string) => Promise<ConsultationResult[]>;
 }

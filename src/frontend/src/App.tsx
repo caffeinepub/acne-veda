@@ -12,6 +12,7 @@ import { MobileFrame } from "./layouts/MobileFrame";
 import { AcneChatPage } from "./pages/AcneChatPage";
 import { AdminPage } from "./pages/AdminPage";
 import { AntiAgeingPage } from "./pages/AntiAgeingPage";
+import { ConsultationPage } from "./pages/ConsultationPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { GlowingSkinPage } from "./pages/GlowingSkinPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -25,7 +26,7 @@ import { Step1BasicInfo } from "./pages/assessment/Step1BasicInfo";
 import { Step2Analyzing } from "./pages/assessment/Step2Analyzing";
 import { Step3Chat } from "./pages/assessment/Step3Chat";
 
-// Layout with nav header — used for content pages
+// Layout with nav header
 function RootLayout() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -60,7 +61,7 @@ function RootLayout() {
   );
 }
 
-// Layout without nav header — used for splash, welcome, login, dashboard (full-screen mobile designs)
+// Layout without nav header
 function NoHeaderLayout() {
   return (
     <>
@@ -70,24 +71,20 @@ function NoHeaderLayout() {
   );
 }
 
-// Root route — bare shell, no layout
 const rootRoute = createRootRoute({ component: Outlet });
 
-// No-header layout route (splash, welcome, login, signup, dashboard)
 const noHeaderRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "no-header",
   component: NoHeaderLayout,
 });
 
-// Splash screen at "/" (home)
 const homeRoute = createRoute({
   getParentRoute: () => noHeaderRoute,
   path: "/",
   component: SplashScreen,
 });
 
-// Auth & dashboard routes — directly under no-header (no MobileFrame wrapper)
 const loginRoute = createRoute({
   getParentRoute: () => noHeaderRoute,
   path: "/login",
@@ -104,7 +101,6 @@ const dashboardRoute = createRoute({
   component: DashboardPage,
 });
 
-// Assessment flow routes
 const assessmentStep1Route = createRoute({
   getParentRoute: () => noHeaderRoute,
   path: "/assessment/step1",
@@ -121,7 +117,6 @@ const assessmentStep3Route = createRoute({
   component: Step3Chat,
 });
 
-// Skin concerns & acne chat — new AI skincare flow
 const skinConcernsRoute = createRoute({
   getParentRoute: () => noHeaderRoute,
   path: "/skin-concerns",
@@ -133,14 +128,19 @@ const acneChatRoute = createRoute({
   component: AcneChatPage,
 });
 
-// Main app interface with bottom navigation
 const mainAppRoute = createRoute({
   getParentRoute: () => noHeaderRoute,
   path: "/main",
   component: MainAppPage,
 });
 
-// Mobile app routes inside MobileFrame, parented under no-header
+// Consultation route — full AI skin & hair consultation flow
+const consultationRoute = createRoute({
+  getParentRoute: () => noHeaderRoute,
+  path: "/consultation",
+  component: ConsultationPage,
+});
+
 const mobileRootRoute = createRoute({
   getParentRoute: () => noHeaderRoute,
   id: "mobile",
@@ -152,7 +152,6 @@ const welcomeRoute = createRoute({
   component: WelcomeScreen,
 });
 
-// Header layout route (content pages)
 const headerRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "header",
@@ -191,6 +190,7 @@ const routeTree = rootRoute.addChildren([
     skinConcernsRoute,
     acneChatRoute,
     mainAppRoute,
+    consultationRoute,
     mobileRootRoute.addChildren([welcomeRoute]),
   ]),
   headerRoute.addChildren([

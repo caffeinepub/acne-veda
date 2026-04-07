@@ -18,8 +18,10 @@ export function Step3Chat() {
     setTimeout(() => {
       if (option === "Skin") {
         navigate({ to: "/skin-concerns" });
+      } else if (option === "Hair") {
+        navigate({ to: "/consultation", search: { flow: "hair" } });
       } else {
-        navigate({ to: "/scan" });
+        navigate({ to: "/skin-concerns" });
       }
     }, 320);
   }
@@ -29,7 +31,6 @@ export function Step3Chat() {
       className="relative flex flex-col min-h-screen"
       style={{ background: "oklch(0.97 0.012 80)" }}
     >
-      {/* Leaf decoration top-right */}
       <div
         className="absolute top-0 right-0 pointer-events-none select-none"
         style={{ opacity: 0.12 }}
@@ -55,7 +56,6 @@ export function Step3Chat() {
           />
         </svg>
       </div>
-      {/* Leaf decoration bottom-left */}
       <div
         className="absolute bottom-0 left-0 pointer-events-none select-none"
         style={{ opacity: 0.08 }}
@@ -78,7 +78,6 @@ export function Step3Chat() {
       </div>
 
       <div className="relative z-10 flex flex-col max-w-sm mx-auto w-full px-5 pt-10 pb-8 min-h-screen">
-        {/* Progress */}
         <motion.div
           className="mb-6"
           initial={{ opacity: 0, y: -8 }}
@@ -119,14 +118,12 @@ export function Step3Chat() {
           </div>
         </motion.div>
 
-        {/* Doctor header */}
         <motion.div
           className="flex items-center gap-3 mb-8"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          {/* Avatar */}
           <div
             className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
             style={{
@@ -152,7 +149,7 @@ export function Step3Chat() {
                 color: "oklch(0.22 0.07 140)",
               }}
             >
-              Dr. Vaidya 😊
+              Dr. Vaidya \uD83D\uDE0A
             </h2>
             <p
               className="text-xs"
@@ -166,16 +163,13 @@ export function Step3Chat() {
           </div>
         </motion.div>
 
-        {/* Chat area */}
         <div className="flex-1 flex flex-col justify-end gap-4">
-          {/* Doctor message bubble */}
           <motion.div
             className="flex items-end gap-2.5"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.25 }}
           >
-            {/* Mini avatar */}
             <div
               className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mb-1"
               style={{
@@ -193,9 +187,7 @@ export function Step3Chat() {
                 DV
               </span>
             </div>
-
             <div className="flex flex-col gap-2.5 max-w-[82%]">
-              {/* Message bubble */}
               <div
                 className="px-4 py-3 rounded-2xl rounded-bl-sm"
                 style={{
@@ -214,8 +206,6 @@ export function Step3Chat() {
                   Are you facing concerns related to:
                 </p>
               </div>
-
-              {/* Option pills */}
               <motion.div
                 className="flex flex-wrap gap-2"
                 initial={{ opacity: 0, y: 10 }}
@@ -253,9 +243,9 @@ export function Step3Chat() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.55 + idx * 0.08 }}
                     >
-                      {option === "Skin" && "🌿 "}
-                      {option === "Hair" && "✨ "}
-                      {option === "Both" && "💚 "}
+                      {option === "Skin" && "\uD83C\uDF3F "}
+                      {option === "Hair" && "\u2728 "}
+                      {option === "Both" && "\uD83D\uDC9A "}
                       {option}
                     </motion.button>
                   ),
@@ -264,7 +254,6 @@ export function Step3Chat() {
             </div>
           </motion.div>
 
-          {/* Typing indicator (shown before selection) */}
           {selected === null && (
             <motion.div
               className="flex items-center gap-2 ml-10"
@@ -294,7 +283,6 @@ export function Step3Chat() {
           )}
         </div>
 
-        {/* Footer */}
         <motion.p
           className="mt-8 text-center text-xs"
           style={{
@@ -305,7 +293,7 @@ export function Step3Chat() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.0 }}
         >
-          © {new Date().getFullYear()}. Built with ❤️ using{" "}
+          \u00A9 {new Date().getFullYear()}. Built with \u2764\uFE0F using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
             target="_blank"
