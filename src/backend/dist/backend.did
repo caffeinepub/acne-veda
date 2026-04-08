@@ -11,34 +11,12 @@ type ConsultationResult =
    timestamp: int;
  };
 service : {
-  /// Record that a user has completed an assessment.
-  addAssessmentHistory: (username: text) -> (variant {
-                                               err: text;
-                                               ok;
-                                             });
-  /// Return all consultation results for a user (most recent 20).
+  addAssessmentHistory: (username: text) -> ();
   getConsultationResults: (username: text) -> (vec ConsultationResult) query;
-  /// Check whether a user has completed at least one assessment.
-  /// Returns false (not an error) for unknown users so new-user flows work.
   hasHistory: (username: text) -> (bool) query;
-  /// Authenticate a user. Returns ok on success, err on failure.
-  loginUser: (username: text, passwordHash: PasswordHash) ->
-   (variant {
-      err: text;
-      ok: text;
-    }) query;
-  /// Register a new user with a hashed password.
-  registerUser: (username: text, passwordHash: PasswordHash) ->
-   (variant {
-      err: text;
-      ok: text;
-    });
-  /// Persist a consultation result and mark the user as having history.
+  loginUser: (username: text, passwordHash: PasswordHash) -> () query;
+  registerUser: (username: text, passwordHash: PasswordHash) -> ();
   saveConsultationResult: (username: text, flowType: text, conditionScore:
    nat, primaryConcern: text, severity: text, doshaImbalance: text,
-   rootCauses: text, reportJson: text, timestamp: int) ->
-   (variant {
-      err: text;
-      ok;
-    });
+   rootCauses: text, reportJson: text, timestamp: int) -> ();
 }

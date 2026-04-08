@@ -25,16 +25,22 @@ export function Step1BasicInfo() {
   const [initializing, setInitializing] = useState(false);
 
   function handleContinue() {
+    // Save basic info to localStorage for use in chat
     if (typeof window !== "undefined") {
       localStorage.setItem("acneveda_fullname", fullName);
       localStorage.setItem("acneveda_age", String(age[0]));
       if (sex) localStorage.setItem("acneveda_sex", sex);
       if (occupation) localStorage.setItem("acneveda_occupation", occupation);
+      // Signal that chat tab should open on arrival and show entry question
+      sessionStorage.setItem("acneveda_pending_tab", "chat");
+      sessionStorage.setItem("acneveda_chat_new_consultation", "1");
     }
 
+    // Show brief "Initializing AI…" overlay, then navigate to /main with ?tab=chat
     setInitializing(true);
     setTimeout(() => {
-      window.location.href = "/chat";
+      // Use direct location to pass the tab param without router type constraints
+      window.location.href = "/main?tab=chat";
     }, 1600);
   }
 
@@ -43,6 +49,7 @@ export function Step1BasicInfo() {
       className="relative flex flex-col min-h-screen"
       style={{ background: "oklch(0.97 0.012 80)" }}
     >
+      {/* Leaf decoration top-right */}
       <div
         className="absolute top-0 right-0 pointer-events-none select-none"
         style={{ opacity: 0.12 }}
@@ -69,6 +76,7 @@ export function Step1BasicInfo() {
         </svg>
       </div>
 
+      {/* AI Initializing overlay */}
       <AnimatePresence>
         {initializing && (
           <motion.div
@@ -147,7 +155,9 @@ export function Step1BasicInfo() {
         )}
       </AnimatePresence>
 
+      {/* Scrollable content area */}
       <div className="flex-1 overflow-y-auto pb-36 px-5 pt-10 max-w-sm mx-auto w-full">
+        {/* Progress */}
         <motion.div
           className="mb-6"
           initial={{ opacity: 0, y: -8 }}
@@ -188,6 +198,7 @@ export function Step1BasicInfo() {
           </div>
         </motion.div>
 
+        {/* Greeting */}
         <motion.div
           className="mb-5"
           initial={{ opacity: 0, y: 16 }}
@@ -212,6 +223,7 @@ export function Step1BasicInfo() {
           >
             Let&apos;s get to know you before we begin
           </p>
+          {/* Dr. Vaidya chip */}
           <div
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium"
             style={{
@@ -222,10 +234,14 @@ export function Step1BasicInfo() {
             }}
           >
             <span>🩺</span>
-            <span>Dr. Vaidya AI will guide your personalized analysis</span>
+            <span>
+              Our AI assistant Dr. Vaidya will guide your personalized skin
+              &amp; hair analysis
+            </span>
           </div>
         </motion.div>
 
+        {/* Disclaimer card */}
         <motion.div
           className="mb-5 p-4 rounded-3xl"
           style={{
@@ -278,12 +294,14 @@ export function Step1BasicInfo() {
           </div>
         </motion.div>
 
+        {/* Form */}
         <motion.div
           className="flex flex-col gap-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.22 }}
         >
+          {/* Full Name */}
           <div>
             <label
               htmlFor="full-name"
@@ -313,6 +331,7 @@ export function Step1BasicInfo() {
             />
           </div>
 
+          {/* Age slider */}
           <div>
             <p
               className="block text-xs font-semibold mb-1.5 uppercase tracking-wider"
@@ -365,6 +384,7 @@ export function Step1BasicInfo() {
             </div>
           </div>
 
+          {/* Sex pills */}
           <div>
             <p
               className="block text-xs font-semibold mb-1.5 uppercase tracking-wider"
@@ -407,6 +427,7 @@ export function Step1BasicInfo() {
             </div>
           </div>
 
+          {/* Occupation dropdown */}
           <div>
             <p
               className="block text-xs font-semibold mb-1.5 uppercase tracking-wider"
@@ -448,6 +469,7 @@ export function Step1BasicInfo() {
           </div>
         </motion.div>
 
+        {/* What happens next preview */}
         <motion.div
           className="mt-6 p-4 rounded-3xl"
           style={{
@@ -477,7 +499,7 @@ export function Step1BasicInfo() {
               {
                 icon: Sparkles,
                 label: "Skin/Hair Analysis",
-                desc: "AI scan for accurate condition detection",
+                desc: "AI scan for accurate acne type detection",
               },
               {
                 icon: Brain,
@@ -521,6 +543,7 @@ export function Step1BasicInfo() {
         </motion.div>
       </div>
 
+      {/* Sticky CTA */}
       <div
         className="fixed bottom-0 left-0 right-0 z-20 px-5 pb-6 pt-4"
         style={{

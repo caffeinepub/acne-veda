@@ -1,17 +1,17 @@
 import Map "mo:core/Map";
-import Text "mo:core/Text";
 import Array "mo:core/Array";
+import Runtime "mo:core/Runtime";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
-  // ── Types ────────────────────────────────────────────────────────────────
-
   public type PasswordHash = Text;
 
   type User = {
     passwordHash : PasswordHash;
   };
 
-  public type ConsultationResult = {
+  type ConsultationResult = {
     flowType : Text;
     conditionScore : Nat;
     primaryConcern : Text;
@@ -22,53 +22,41 @@ actor {
     timestamp : Int;
   };
 
-  // ── State (persists via enhanced orthogonal persistence) ─────────────────
-
+  // State persists automatically via enhanced orthogonal persistence
   let users : Map.Map<Text, User> = Map.empty<Text, User>();
   let history : Map.Map<Text, Bool> = Map.empty<Text, Bool>();
-
-  // Store consultations as a flat array per user (compatible with previous [ConsultationResult] type)
   let consultations : Map.Map<Text, [ConsultationResult]> = Map.empty<Text, [ConsultationResult]>();
 
-  // ── Public API ───────────────────────────────────────────────────────────
-
-  /// Register a new user with a hashed password.
-  public shared func registerUser(username : Text, passwordHash : PasswordHash) : async { #ok : Text; #err : Text } {
-    if (username.size() == 0) {
-      return #err("Username cannot be empty");
-    };
+  // Register a new user
+  public shared func registerUser(username : Text, passwordHash : PasswordHash) : async () {
     if (users.containsKey(username)) {
-      return #err("Username already taken");
+      Runtime.trap("Username already taken");
     };
     users.add(username, { passwordHash });
-    #ok("Registration successful");
   };
 
-  /// Authenticate a user. Returns ok on success, err on failure.
-  public query func loginUser(username : Text, passwordHash : PasswordHash) : async { #ok : Text; #err : Text } {
+  // Log in a user (called loginUser by the frontend)
+  public query func loginUser(username : Text, passwordHash : PasswordHash) : async () {
     switch (users.get(username)) {
-      case (null) { #err("User not found") };
+      case (null) { Runtime.trap("User not found") };
       case (?user) {
         if (user.passwordHash != passwordHash) {
-          #err("Incorrect password");
-        } else {
-          #ok("Login successful");
+          Runtime.trap("Incorrect password");
         };
       };
     };
   };
 
-  /// Record that a user has completed an assessment.
-  public shared func addAssessmentHistory(username : Text) : async { #ok; #err : Text } {
+  // Add an assessment to the history
+  public shared func addAssessmentHistory(username : Text) : async () {
     if (not users.containsKey(username)) {
-      return #err("User not found");
+      Runtime.trap("User not found");
     };
     history.add(username, true);
-    #ok;
   };
 
-  /// Check whether a user has completed at least one assessment.
-  /// Returns false (not an error) for unknown users so new-user flows work.
+  // Check if a user has any assessment history
+  // Returns false for unknown users (no trap) so new users work correctly
   public query func hasHistory(username : Text) : async Bool {
     switch (history.get(username)) {
       case (?h) { h };
@@ -76,7 +64,7 @@ actor {
     };
   };
 
-  /// Persist a consultation result and mark the user as having history.
+  // Save a consultation result
   public shared func saveConsultationResult(
     username : Text,
     flowType : Text,
@@ -86,10 +74,10 @@ actor {
     doshaImbalance : Text,
     rootCauses : Text,
     reportJson : Text,
-    timestamp : Int,
-  ) : async { #ok; #err : Text } {
+    timestamp : Int
+  ) : async () {
     if (not users.containsKey(username)) {
-      return #err("User not found");
+      Runtime.trap("User not found");
     };
     let result : ConsultationResult = {
       flowType;
@@ -101,28 +89,30 @@ actor {
       reportJson;
       timestamp;
     };
-    let existing = switch (consultations.get(username)) {
-      case (null) { [] };
-      case (?arr) { arr };
+    switch (consultations.get(username)) {
+      case (null) {
+        consultations.add(username, [result]);
+      };
+      case (?existing) {
+        consultations.add(username, existing.concat([result]));
+      };
     };
-    // Append new result, keep last 20
-    let combined = existing.concat([result]);
-    let size = combined.size();
-    let trimmed = if (size > 20) {
-      Array.tabulate(20, func(i) { combined[size - 20 + i] });
-    } else {
-      combined;
-    };
-    consultations.add(username, trimmed);
+    // Also mark as having history
     history.add(username, true);
-    #ok;
   };
 
-  /// Return all consultation results for a user (most recent 20).
+  // Get consultation results for a user (max 10 most recent)
   public query func getConsultationResults(username : Text) : async [ConsultationResult] {
     switch (consultations.get(username)) {
       case (null) { [] };
-      case (?results) { results };
+      case (?results) {
+        let size = results.size();
+        if (size <= 10) {
+          results
+        } else {
+          results.sliceToArray(size - 10, size)
+        };
+      };
     };
   };
 };

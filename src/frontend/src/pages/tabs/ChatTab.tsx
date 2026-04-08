@@ -2,20 +2,30 @@ import { Send } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
-type Message = { id: string; from: "bot" | "user"; text: string };
-type Chip = { label: string };
+type Message = {
+  id: string;
+  from: "bot" | "user";
+  text: string;
+};
+
+type Chip = {
+  label: string;
+};
+
 type SmartReply = { reply: string; chips: string[] };
 
+// ─── Consultation flow types ────────────────────────────────────────────────
+
 type ConsultationPhase =
-  | "entry"
-  | "skin_concern"
-  | "skin_severity"
-  | "skin_type"
-  | "hair_concern"
-  | "hair_severity"
-  | "hair_type"
-  | "recommendation"
-  | "freeform";
+  | "entry" // Skin / Hair / Both selection
+  | "skin_concern" // Which skin concern
+  | "skin_severity" // Mild / Moderate / Severe
+  | "skin_type" // Skin type
+  | "hair_concern" // Which hair concern
+  | "hair_severity" // Mild / Moderate / Severe
+  | "hair_type" // Scalp type
+  | "recommendation" // Final recommendation shown
+  | "freeform"; // Open-ended chat after consultation
 
 interface ConsultationState {
   phase: ConsultationPhase;
@@ -27,6 +37,8 @@ interface ConsultationState {
   hairSeverity: string | null;
   hairType: string | null;
 }
+
+// ─── Ayurvedic keyword reply bank ────────────────────────────────────────────
 
 const REPLY_ROUTINE: SmartReply = {
   reply:
@@ -120,15 +132,20 @@ function getKeywordReply(text: string): SmartReply | null {
   return null;
 }
 
+// ─── Recommendation generator ────────────────────────────────────────────────
+
 function buildRecommendation(state: ConsultationState): string {
   const parts: string[] = [];
+
   if (state.skinConcern) {
     const concern = state.skinConcern.toLowerCase();
     const severity = state.skinSeverity ?? "moderate";
     const skinType = state.skinType ?? "combination";
+
     parts.push(
       `🌿 **Skin Analysis:**\nYou have ${severity.toLowerCase()} ${concern} with ${skinType.toLowerCase()} skin.`,
     );
+
     if (concern.includes("acne")) {
       parts.push(
         "**Morning:** Neem cleanser → Rose water toner → Oil control serum → Light sunscreen.",
@@ -177,12 +194,15 @@ function buildRecommendation(state: ConsultationState): string {
       );
     }
   }
+
   if (state.hairConcern) {
     const concern = state.hairConcern.toLowerCase();
     const severity = state.hairSeverity ?? "moderate";
+
     parts.push(
       `\n💇 **Hair Analysis:**\nYou have ${severity.toLowerCase()} ${concern}.`,
     );
+
     if (concern.includes("fall") || concern.includes("thin")) {
       parts.push(
         "**Oil routine:** Bhringraj oil massage 2x/week — leave overnight, wash with mild shampoo.",
@@ -218,11 +238,15 @@ function buildRecommendation(state: ConsultationState): string {
       );
     }
   }
+
   parts.push(
     "\n✨ This is a personalized Ayurvedic plan for you. Results show in 4–8 weeks with consistency. Ask me anything about your routine!",
   );
+
   return parts.join("\n\n");
 }
+
+// ─── Chat step definitions ────────────────────────────────────────────────────
 
 const SKIN_CONCERNS = [
   "Acne / Pimples",
@@ -244,6 +268,7 @@ const HAIR_CONCERNS = [
 ];
 const HAIR_SEVERITIES = ["Mild", "Moderate", "Severe"];
 const HAIR_TYPES = ["Oily Scalp", "Dry Scalp", "Normal Scalp"];
+
 const ENTRY_CHIPS = ["🌿 Skin", "💇 Hair", "🌿 Both"];
 
 function getChipsForPhase(phase: ConsultationPhase): string[] {
@@ -285,9 +310,16 @@ function getNextBotMessage(
           : lower.includes("hair")
             ? "hair"
             : "skin";
+      const updated = {
+        ...state,
+        phase:
+          focus === "hair"
+            ? "hair_concern"
+            : ("skin_concern" as ConsultationPhase),
+        focus,
+      };
       const nextPhase: ConsultationPhase =
         focus === "hair" ? "hair_concern" : "skin_concern";
-      const updated = { ...state, phase: nextPhase, focus };
       const text =
         focus === "hair"
           ? "Got it! 💇 Let me understand your hair concern better.\n\nTell me your main hair concern:"
@@ -320,6 +352,7 @@ function getNextBotMessage(
     }
     case "skin_type": {
       const updated = { ...state, skinType: userText };
+      // If "both" focus, now move to hair
       if (state.focus === "both") {
         return {
           text: "Perfect! Now let's look at your hair. What is your main hair concern?",
@@ -327,6 +360,7 @@ function getNextBotMessage(
           updatedState: { ...updated, phase: "hair_concern" },
         };
       }
+      // Otherwise generate skin recommendation
       const finalState = {
         ...updated,
         phase: "recommendation" as ConsultationPhase,
@@ -386,6 +420,8 @@ function getNextBotMessage(
   }
 }
 
+// ─── Component ────────────────────────────────────────────────────────────────
+
 const INITIAL_CONSULTATION: ConsultationState = {
   phase: "entry",
   focus: null,
@@ -404,33 +440,18 @@ function makeEntryMessage(username: string): Message {
     text: `Hi ${username}! 👋 I'm Dr. Vaidya, your AI health advisor.\n\nWhat would you like help with today?`,
   };
 }
-function makeFollowUpMessage(username: string): Message {
-  return {
-    id: "followup-welcome",
-    from: "bot",
-    text: `Welcome back, ${username}! 🌿\n\nHow can I help you today? Feel free to ask about your routine, diet, products, or any new concerns.`,
-  };
-}
-
-const GREEN = "oklch(0.52 0.18 145)";
 
 export function ChatTab() {
   const username =
     typeof window !== "undefined"
       ? (localStorage.getItem("acneveda_user") ?? "there")
       : "there";
-  const chatCompleted =
-    typeof window !== "undefined"
-      ? sessionStorage.getItem("chatCompleted") === "true"
-      : false;
 
   const [messages, setMessages] = useState<Message[]>([
-    chatCompleted ? makeFollowUpMessage(username) : makeEntryMessage(username),
+    makeEntryMessage(username),
   ]);
   const [chips, setChips] = useState<Chip[]>(
-    chatCompleted
-      ? DEFAULT_CHIPS.map((l) => ({ label: l }))
-      : ENTRY_CHIPS.map((l) => ({ label: l })),
+    ENTRY_CHIPS.map((l) => ({ label: l })),
   );
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -439,6 +460,7 @@ export function ChatTab() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Clear the new-consultation signal on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       sessionStorage.removeItem("acneveda_chat_new_consultation");
@@ -452,6 +474,7 @@ export function ChatTab() {
 
   const sendMessage = (text: string) => {
     if (!text.trim()) return;
+
     const userMsg: Message = { id: Date.now().toString(), from: "user", text };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
@@ -460,29 +483,21 @@ export function ChatTab() {
 
     setTimeout(() => {
       setIsTyping(false);
-      if (chatCompleted) {
-        const kw = getKeywordReply(text);
-        const botText = kw
-          ? kw.reply
-          : "Great question! Based on Ayurvedic principles, I'd recommend focusing on your daily routine consistently. 🌿 Is there anything specific you'd like to know?";
-        const nextChips = kw ? kw.chips : DEFAULT_CHIPS;
-        setMessages((prev) => [
-          ...prev,
-          { id: (Date.now() + 1).toString(), from: "bot", text: botText },
-        ]);
-        setChips(nextChips.map((c) => ({ label: c })));
-        return;
-      }
+
+      const currentPhase = consultation.phase;
       const {
         text: botText,
         nextPhase,
         updatedState,
-      } = getNextBotMessage(consultation.phase, text, consultation);
+      } = getNextBotMessage(currentPhase, text, consultation);
+
       setConsultation(updatedState);
       setMessages((prev) => [
         ...prev,
         { id: (Date.now() + 1).toString(), from: "bot", text: botText },
       ]);
+
+      // Set chips for next phase
       const nextChips = getChipsForPhase(nextPhase);
       setChips(nextChips.map((c) => ({ label: c })));
     }, 900);
@@ -498,14 +513,13 @@ export function ChatTab() {
   return (
     <div
       className="flex flex-col h-full"
-      style={{ background: "oklch(0.97 0.012 80)", paddingBottom: "0" }}
+      style={{ background: "#F0F7FF", paddingBottom: "0" }}
     >
       {/* Header */}
       <div
         className="px-5 pt-6 pb-4 shrink-0"
         style={{
-          background:
-            "linear-gradient(135deg, oklch(0.48 0.18 145) 0%, oklch(0.42 0.14 160) 100%)",
+          background: "linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)",
         }}
       >
         <div className="flex items-center gap-3">
@@ -518,14 +532,14 @@ export function ChatTab() {
           <div>
             <h1
               className="text-white text-lg font-bold"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              style={{
+                fontFamily:
+                  "'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif",
+              }}
             >
-              {chatCompleted ? "Follow-up Chat" : "AI Dermatology Chat"}
+              AI Dermatology Chat
             </h1>
-            <p
-              className="text-white/70 text-xs"
-              style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
-            >
+            <p className="text-white/70 text-xs">
               Dr. Vaidya AI • Ayurvedic Expert
             </p>
           </div>
@@ -535,21 +549,15 @@ export function ChatTab() {
           >
             <span
               className="w-2 h-2 rounded-full"
-              style={{ background: "oklch(0.75 0.2 145)" }}
+              style={{ background: "#4ADE80" }}
             />
-            <span
-              className="text-white/90 text-xs"
-              style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
-            >
-              Online
-            </span>
+            <span className="text-white/90 text-xs">Online</span>
           </div>
         </div>
       </div>
 
-      {/* New Consultation Banner */}
-      {(chatCompleted ||
-        consultation.phase === "freeform" ||
+      {/* New Consultation Banner — shown only in freeform / after recommendation */}
+      {(consultation.phase === "freeform" ||
         consultation.phase === "recommendation") && (
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -569,28 +577,20 @@ export function ChatTab() {
               fontWeight: 600,
             }}
           >
-            {chatCompleted
-              ? "🌿 Need a full new analysis?"
-              : "🌿 Start a new consultation"}
+            🌿 Start a new consultation
           </p>
           <button
             type="button"
             data-ocid="chat.consultation_button"
-            onClick={
-              chatCompleted
-                ? () => {
-                    window.location.href = "/assessment/step1";
-                  }
-                : startNewConsultation
-            }
+            onClick={startNewConsultation}
             className="px-3 py-1.5 rounded-xl font-semibold text-xs transition-all active:scale-95"
             style={{
-              background: GREEN,
+              background: "oklch(0.52 0.18 145)",
               color: "#fff",
               fontFamily: "'DM Sans', sans-serif",
             }}
           >
-            {chatCompleted ? "New Assessment →" : "Restart →"}
+            Restart →
           </button>
         </motion.div>
       )}
@@ -611,7 +611,7 @@ export function ChatTab() {
               {msg.from === "bot" && (
                 <div
                   className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-1"
-                  style={{ background: GREEN, color: "#fff" }}
+                  style={{ background: "#10B981", color: "#fff" }}
                 >
                   AI
                 </div>
@@ -619,12 +619,13 @@ export function ChatTab() {
               <div
                 className="max-w-[78%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-line"
                 style={{
-                  background: msg.from === "user" ? GREEN : "oklch(1 0 0)",
-                  color: msg.from === "user" ? "#fff" : "oklch(0.22 0.07 140)",
+                  background: msg.from === "user" ? "#3B82F6" : "#fff",
+                  color: msg.from === "user" ? "#fff" : "#1E293B",
                   boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
                   borderTopRightRadius: msg.from === "user" ? "4px" : "16px",
                   borderTopLeftRadius: msg.from === "bot" ? "4px" : "16px",
-                  fontFamily: "'DM Sans', system-ui, sans-serif",
+                  fontFamily:
+                    "'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif",
                 }}
               >
                 {msg.text}
@@ -641,14 +642,14 @@ export function ChatTab() {
           >
             <div
               className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-              style={{ background: GREEN, color: "#fff" }}
+              style={{ background: "#10B981", color: "#fff" }}
             >
               AI
             </div>
             <div
               className="px-3.5 py-3 rounded-2xl flex gap-1 items-center"
               style={{
-                background: "oklch(1 0 0)",
+                background: "#fff",
                 boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
               }}
             >
@@ -657,7 +658,7 @@ export function ChatTab() {
                   key={i}
                   className="w-1.5 h-1.5 rounded-full"
                   style={{
-                    background: "oklch(0.7 0.04 80)",
+                    background: "#94A3B8",
                     animation: `typingDot 1.2s ease-in-out ${i * 0.2}s infinite`,
                   }}
                 />
@@ -681,10 +682,10 @@ export function ChatTab() {
                 onClick={() => sendMessage(chip.label)}
                 className="px-3 py-1.5 rounded-full text-xs font-medium transition-all active:scale-[0.96]"
                 style={{
-                  background: "oklch(0.52 0.18 145 / 0.08)",
-                  border: "1.5px solid oklch(0.52 0.18 145 / 0.3)",
-                  color: GREEN,
-                  fontFamily: "'DM Sans', system-ui, sans-serif",
+                  background: "#EFF6FF",
+                  border: "1.5px solid #BFDBFE",
+                  color: "#3B82F6",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
                 }}
               >
                 {chip.label}
@@ -699,9 +700,9 @@ export function ChatTab() {
       <div
         className="absolute bottom-16 left-0 right-0 px-4 py-3"
         style={{
-          background: "oklch(1 0 0)",
-          borderTop: "1px solid oklch(0.9 0.02 80)",
-          boxShadow: "0 -2px 12px oklch(0.55 0.14 145 / 0.06)",
+          background: "#fff",
+          borderTop: "1px solid #E2E8F0",
+          boxShadow: "0 -2px 12px rgba(0,0,0,0.06)",
         }}
       >
         <div className="flex items-center gap-2">
@@ -720,10 +721,10 @@ export function ChatTab() {
             placeholder="Ask Dr. Vaidya anything..."
             className="flex-1 rounded-full px-4 py-2.5 text-sm outline-none"
             style={{
-              background: "oklch(0.52 0.18 145 / 0.06)",
-              border: "1.5px solid oklch(0.9 0.02 80)",
-              color: "oklch(0.28 0.07 140)",
-              fontFamily: "'DM Sans', system-ui, sans-serif",
+              background: "#F0F7FF",
+              border: "1.5px solid #E2E8F0",
+              color: "#1E293B",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
           />
           <button
@@ -733,10 +734,9 @@ export function ChatTab() {
             disabled={!input.trim()}
             className="w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90"
             style={{
-              background: input.trim() ? GREEN : "oklch(0.9 0.02 80)",
-              color: input.trim() ? "#fff" : "oklch(0.6 0.04 60)",
+              background: input.trim() ? "#3B82F6" : "#E2E8F0",
+              color: input.trim() ? "#fff" : "#94A3B8",
             }}
-            aria-label="Send message"
           >
             <Send className="w-4 h-4" />
           </button>

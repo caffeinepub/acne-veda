@@ -22,46 +22,14 @@ export interface ConsultationResult {
 }
 export type PasswordHash = string;
 export interface _SERVICE {
-  /**
-   * / Record that a user has completed an assessment.
-   */
-  'addAssessmentHistory' : ActorMethod<
-    [string],
-    { 'ok' : null } |
-      { 'err' : string }
-  >,
-  /**
-   * / Return all consultation results for a user (most recent 20).
-   */
+  'addAssessmentHistory' : ActorMethod<[string], undefined>,
   'getConsultationResults' : ActorMethod<[string], Array<ConsultationResult>>,
-  /**
-   * / Check whether a user has completed at least one assessment.
-   * / Returns false (not an error) for unknown users so new-user flows work.
-   */
   'hasHistory' : ActorMethod<[string], boolean>,
-  /**
-   * / Authenticate a user. Returns ok on success, err on failure.
-   */
-  'loginUser' : ActorMethod<
-    [string, PasswordHash],
-    { 'ok' : string } |
-      { 'err' : string }
-  >,
-  /**
-   * / Register a new user with a hashed password.
-   */
-  'registerUser' : ActorMethod<
-    [string, PasswordHash],
-    { 'ok' : string } |
-      { 'err' : string }
-  >,
-  /**
-   * / Persist a consultation result and mark the user as having history.
-   */
+  'loginUser' : ActorMethod<[string, PasswordHash], undefined>,
+  'registerUser' : ActorMethod<[string, PasswordHash], undefined>,
   'saveConsultationResult' : ActorMethod<
     [string, string, bigint, string, string, string, string, string, bigint],
-    { 'ok' : null } |
-      { 'err' : string }
+    undefined
   >,
 }
 export declare const idlService: IDL.ServiceClass;

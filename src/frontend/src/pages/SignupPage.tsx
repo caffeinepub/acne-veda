@@ -30,10 +30,7 @@ function getChecks(pw: string): StrengthCheck[] {
     { label: "At least 8 characters", pass: pw.length >= 8 },
     { label: "Contains a lowercase letter", pass: /[a-z]/.test(pw) },
     { label: "Contains an uppercase letter", pass: /[A-Z]/.test(pw) },
-    {
-      label: "Contains a symbol (@, #, $, %\u2026)",
-      pass: /[^a-zA-Z0-9]/.test(pw),
-    },
+    { label: "Contains a symbol (@, #, $, %…)", pass: /[^a-zA-Z0-9]/.test(pw) },
   ];
 }
 
@@ -64,9 +61,10 @@ export function SignupPage() {
       const hash = await hashPassword(password);
       await actor.registerUser(username.trim(), hash);
       localStorage.setItem("acneveda_user", username.trim());
+      // New users always go to assessment first
       navigate({ to: "/assessment/step1" });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "";
+    } catch (err: any) {
+      const msg = err?.message ?? "";
       const raw = String(err);
       const combined = `${msg} ${raw}`.toLowerCase();
       if (
@@ -78,25 +76,17 @@ export function SignupPage() {
       } else if (combined.includes("invalid") || combined.includes("short")) {
         setError("Username or password is invalid. Please check and retry.");
       } else {
-        setError(`Sign up failed: ${msg || raw}`);
+        const displayMsg = msg || raw;
+        setError(`Sign up failed: ${displayMsg}`);
       }
     } finally {
       setLoading(false);
     }
   }
 
-  const inputStyle = {
-    fontFamily: "'DM Sans', system-ui, sans-serif",
-    background: "oklch(0.99 0.006 80)",
-    border: "1.5px solid oklch(0.88 0.03 80)",
-    color: "oklch(0.28 0.08 140)",
-  };
-
   return (
-    <div
-      className="relative flex flex-col min-h-screen overflow-hidden"
-      style={{ background: "oklch(0.97 0.012 80)" }}
-    >
+    <div className="relative flex flex-col min-h-screen bg-[oklch(0.97_0.012_80)] overflow-hidden">
+      {/* Leaf accent top-left */}
       <div
         className="absolute top-0 left-0 pointer-events-none"
         style={{ opacity: 0.12 }}
@@ -119,6 +109,7 @@ export function SignupPage() {
       </div>
 
       <div className="relative z-10 flex flex-col flex-1 px-6 pt-6 pb-8 max-w-sm mx-auto w-full">
+        {/* Back button */}
         <motion.button
           type="button"
           data-ocid="signup.back_button"
@@ -136,6 +127,7 @@ export function SignupPage() {
           <span className="text-sm font-medium">Back</span>
         </motion.button>
 
+        {/* Logo + brand */}
         <motion.div
           className="flex items-center gap-3 mb-8"
           initial={{ opacity: 0, x: -12 }}
@@ -144,7 +136,9 @@ export function SignupPage() {
         >
           <div
             className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
-            style={{ boxShadow: "0 2px 8px oklch(0.55 0.14 145 / 0.2)" }}
+            style={{
+              boxShadow: "0 2px 8px oklch(0.55 0.14 145 / 0.2)",
+            }}
           >
             <img
               src="/assets/uploads/beige_and_green_minimal_ayurveda_company_logo_20260329_160220_0000-019d3d43-5763-7149-b499-c52ab9b218f8-1.jpg"
@@ -174,6 +168,7 @@ export function SignupPage() {
           </div>
         </motion.div>
 
+        {/* Heading */}
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: 10 }}
@@ -200,6 +195,7 @@ export function SignupPage() {
           </p>
         </motion.div>
 
+        {/* Form */}
         <motion.form
           onSubmit={handleSignup}
           className="flex flex-col gap-4"
@@ -207,6 +203,7 @@ export function SignupPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.18, duration: 0.45 }}
         >
+          {/* Username */}
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="signup-username"
@@ -227,7 +224,12 @@ export function SignupPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
-              style={inputStyle}
+              style={{
+                fontFamily: "'DM Sans', system-ui, sans-serif",
+                background: "oklch(0.99 0.006 80)",
+                border: "1.5px solid oklch(0.88 0.03 80)",
+                color: "oklch(0.28 0.08 140)",
+              }}
               onFocus={(e) => {
                 e.target.style.borderColor = "oklch(0.55 0.14 145)";
                 e.target.style.boxShadow =
@@ -240,6 +242,7 @@ export function SignupPage() {
             />
           </div>
 
+          {/* Password */}
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="signup-password"
@@ -261,7 +264,12 @@ export function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
-                style={inputStyle}
+                style={{
+                  fontFamily: "'DM Sans', system-ui, sans-serif",
+                  background: "oklch(0.99 0.006 80)",
+                  border: "1.5px solid oklch(0.88 0.03 80)",
+                  color: "oklch(0.28 0.08 140)",
+                }}
                 onFocus={(e) => {
                   e.target.style.borderColor = "oklch(0.55 0.14 145)";
                   e.target.style.boxShadow =
@@ -286,6 +294,8 @@ export function SignupPage() {
                 )}
               </button>
             </div>
+
+            {/* Strength checks */}
             {password.length > 0 && (
               <div className="flex flex-col gap-1 mt-1">
                 {checks.map((check) => (
@@ -318,6 +328,7 @@ export function SignupPage() {
             )}
           </div>
 
+          {/* Confirm Password */}
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="signup-confirm"
@@ -340,13 +351,15 @@ export function SignupPage() {
                 onChange={(e) => setConfirm(e.target.value)}
                 className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
                 style={{
-                  ...inputStyle,
+                  fontFamily: "'DM Sans', system-ui, sans-serif",
+                  background: "oklch(0.99 0.006 80)",
                   border:
                     confirm.length > 0
                       ? passwordsMatch
                         ? "1.5px solid oklch(0.55 0.18 145)"
                         : "1.5px solid oklch(0.62 0.2 25)"
                       : "1.5px solid oklch(0.88 0.03 80)",
+                  color: "oklch(0.28 0.08 140)",
                 }}
                 onFocus={(e) => {
                   if (!passwordsMatch) return;
@@ -385,6 +398,7 @@ export function SignupPage() {
             )}
           </div>
 
+          {/* Error message */}
           {error && (
             <div
               data-ocid="signup.error_state"
@@ -400,6 +414,7 @@ export function SignupPage() {
             </div>
           )}
 
+          {/* Submit */}
           <button
             type="submit"
             data-ocid="signup.submit_button"
@@ -413,7 +428,7 @@ export function SignupPage() {
                   : "oklch(0.78 0.06 60)",
               boxShadow:
                 canSubmit && !loading && actorReady
-                  ? "0 4px 20px -2px oklch(0.65 0.2 35 / 0.35)"
+                  ? "0 4px 20px -2px oklch(0.65 0.2 35 / 0.35), 0 1px 4px -1px oklch(0.65 0.2 35 / 0.2)"
                   : "none",
               cursor:
                 canSubmit && !loading && actorReady ? "pointer" : "not-allowed",

@@ -1,4 +1,6 @@
-// Version: 1.0.0
+// Version: 3.0.0
+type BTreeMap__298620450<K, V> =
+  {var root : Node__849645438<K, V>; var size : Nat___967597909};
 type ConsultationResult__125881192 =
   {
     conditionScore : Nat;
@@ -10,18 +12,33 @@ type ConsultationResult__125881192 =
     severity : Text;
     timestamp : Int
   };
+type Data__359466409<K, V> =
+  {var count : Nat___967597909; kvs : [var ?(K, V)]};
 type Data__791452850<K, V> =
   {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type Internal__698724509<K, V> =
+  {children : [var ?Node__849645438<K, V>]; data : Data__359466409<K, V>};
 type Internal__8484328<K, V> =
   {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__686525213<K, V> = {data : Data__359466409<K, V>};
 type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
 type Nat__490723111 = Nat__920180692;
 type Nat__920180692 = Nat;
+type Nat___967597909 = Nat;
 type Node__46230540<K, V> =
   {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type Node__849645438<K, V> =
+  {#internal : Internal__698724509<K, V>; #leaf : Leaf__686525213<K, V>};
+type OldUser__655922588 = {passwordHash : PasswordHash__927841048};
 type PasswordHash__260336738 = Text;
+type PasswordHash__927841048 = Text;
 type User__831686142 = {passwordHash : PasswordHash__260336738};
-actor {
+actor ({
+  in var history : BTreeMap__298620450<Text, Bool>;
+  in var historyEntries : [(Text, Bool)];
+  in var userEntries : [(Text, OldUser__655922588)];
+  in var users : BTreeMap__298620450<Text, OldUser__655922588>
+}, {
   stable consultations :
     {
       var root : Node__46230540<Text, [ConsultationResult__125881192]>;
@@ -34,4 +51,4 @@ actor {
       var root : Node__46230540<Text, User__831686142>;
       var size : Nat__490723111
     }
-};
+}) ;

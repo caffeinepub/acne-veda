@@ -9,7 +9,6 @@ import {
 import { MobileFrame } from "./layouts/MobileFrame";
 import { AdminPage } from "./pages/AdminPage";
 import { AntiAgeingPage } from "./pages/AntiAgeingPage";
-import { ChatPage } from "./pages/ChatPage";
 import { GlowingSkinPage } from "./pages/GlowingSkinPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MainAppPage } from "./pages/MainAppPage";
@@ -18,6 +17,7 @@ import { SplashScreen } from "./pages/SplashScreen";
 import { WelcomeScreen } from "./pages/WelcomeScreen";
 import { Step1BasicInfo } from "./pages/assessment/Step1BasicInfo";
 
+// Layout without nav header — used for all mobile-first screens
 function NoHeaderLayout() {
   return (
     <>
@@ -27,11 +27,12 @@ function NoHeaderLayout() {
   );
 }
 
+// Layout with nav header — used for informational/content pages
 function HeaderLayout() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center gap-3">
+        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
           <a
             href="/"
             className="flex items-center shrink-0"
@@ -43,12 +44,6 @@ function HeaderLayout() {
               className="h-10 sm:h-12 w-auto object-contain max-w-[100px] sm:max-w-[160px]"
             />
           </a>
-          <span
-            className="text-xs font-medium"
-            style={{ color: "oklch(0.55 0.04 60)" }}
-          >
-            Made by Dr. Akash Hari (BAMS)
-          </span>
         </div>
       </header>
       <Outlet />
@@ -65,6 +60,7 @@ const noHeaderRoute = createRoute({
   component: NoHeaderLayout,
 });
 
+// Root / splash screen
 const homeRoute = createRoute({
   getParentRoute: () => noHeaderRoute,
   path: "/",
@@ -95,12 +91,6 @@ const mainAppRoute = createRoute({
   component: MainAppPage,
 });
 
-const chatPageRoute = createRoute({
-  getParentRoute: () => noHeaderRoute,
-  path: "/chat",
-  component: ChatPage,
-});
-
 const mobileRootRoute = createRoute({
   getParentRoute: () => noHeaderRoute,
   id: "mobile",
@@ -113,6 +103,7 @@ const welcomeRoute = createRoute({
   component: WelcomeScreen,
 });
 
+// Header layout for content/info pages
 const headerRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "header",
@@ -144,7 +135,6 @@ const routeTree = rootRoute.addChildren([
     signupRoute,
     assessmentStep1Route,
     mainAppRoute,
-    chatPageRoute,
     mobileRootRoute.addChildren([welcomeRoute]),
   ]),
   headerRoute.addChildren([antiAgeingRoute, glowingSkinRoute, adminRoute]),

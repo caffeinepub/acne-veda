@@ -21,27 +21,15 @@ export const ConsultationResult = IDL.Record({
 export const PasswordHash = IDL.Text;
 
 export const idlService = IDL.Service({
-  'addAssessmentHistory' : IDL.Func(
-      [IDL.Text],
-      [IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text })],
-      [],
-    ),
+  'addAssessmentHistory' : IDL.Func([IDL.Text], [], []),
   'getConsultationResults' : IDL.Func(
       [IDL.Text],
       [IDL.Vec(ConsultationResult)],
       ['query'],
     ),
   'hasHistory' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
-  'loginUser' : IDL.Func(
-      [IDL.Text, PasswordHash],
-      [IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text })],
-      ['query'],
-    ),
-  'registerUser' : IDL.Func(
-      [IDL.Text, PasswordHash],
-      [IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text })],
-      [],
-    ),
+  'loginUser' : IDL.Func([IDL.Text, PasswordHash], [], ['query']),
+  'registerUser' : IDL.Func([IDL.Text, PasswordHash], [], []),
   'saveConsultationResult' : IDL.Func(
       [
         IDL.Text,
@@ -54,7 +42,7 @@ export const idlService = IDL.Service({
         IDL.Text,
         IDL.Int,
       ],
-      [IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text })],
+      [],
       [],
     ),
 });
@@ -75,27 +63,15 @@ export const idlFactory = ({ IDL }) => {
   const PasswordHash = IDL.Text;
   
   return IDL.Service({
-    'addAssessmentHistory' : IDL.Func(
-        [IDL.Text],
-        [IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text })],
-        [],
-      ),
+    'addAssessmentHistory' : IDL.Func([IDL.Text], [], []),
     'getConsultationResults' : IDL.Func(
         [IDL.Text],
         [IDL.Vec(ConsultationResult)],
         ['query'],
       ),
     'hasHistory' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
-    'loginUser' : IDL.Func(
-        [IDL.Text, PasswordHash],
-        [IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text })],
-        ['query'],
-      ),
-    'registerUser' : IDL.Func(
-        [IDL.Text, PasswordHash],
-        [IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text })],
-        [],
-      ),
+    'loginUser' : IDL.Func([IDL.Text, PasswordHash], [], ['query']),
+    'registerUser' : IDL.Func([IDL.Text, PasswordHash], [], []),
     'saveConsultationResult' : IDL.Func(
         [
           IDL.Text,
@@ -108,7 +84,7 @@ export const idlFactory = ({ IDL }) => {
           IDL.Text,
           IDL.Int,
         ],
-        [IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text })],
+        [],
         [],
       ),
   });

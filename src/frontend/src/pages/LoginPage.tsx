@@ -32,38 +32,17 @@ export function LoginPage() {
     setLoading(true);
     try {
       const hash = await hashPassword(password);
-      const result = await actor.loginUser(username.trim(), hash);
-      if (result.__kind__ === "err") {
-        const errMsg = String(
-          (result as { __kind__: "err"; err?: unknown }).err ?? "Login failed",
-        );
-        const lower = errMsg.toLowerCase();
-        if (
-          lower.includes("invalid") ||
-          lower.includes("wrong") ||
-          lower.includes("incorrect")
-        ) {
-          setError("Invalid username or password.");
-        } else if (
-          lower.includes("not found") ||
-          lower.includes("no user") ||
-          lower.includes("does not exist")
-        ) {
-          setError("Account not found. Please sign up.");
-        } else {
-          setError(`Login failed: ${errMsg}`);
-        }
-        return;
-      }
+      await actor.loginUser(username.trim(), hash);
       localStorage.setItem("acneveda_user", username.trim());
+      // Check if user has completed assessment; route accordingly
       try {
         const history = await actor.hasHistory(username.trim());
         navigate({ to: history ? "/main" : "/assessment/step1" });
       } catch {
         navigate({ to: "/assessment/step1" });
       }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "";
+    } catch (err: any) {
+      const msg = err?.message ?? "";
       const raw = String(err);
       const combined = `${msg} ${raw}`.toLowerCase();
       if (
@@ -79,25 +58,17 @@ export function LoginPage() {
       ) {
         setError("Account not found. Please sign up.");
       } else {
-        setError(`Login failed: ${msg || raw}`);
+        const displayMsg = msg || raw;
+        setError(`Login failed: ${displayMsg}`);
       }
     } finally {
       setLoading(false);
     }
   }
 
-  const inputStyle = {
-    fontFamily: "'DM Sans', system-ui, sans-serif",
-    background: "oklch(0.99 0.006 80)",
-    border: "1.5px solid oklch(0.88 0.03 80)",
-    color: "oklch(0.28 0.08 140)",
-  };
-
   return (
-    <div
-      className="relative flex flex-col min-h-screen overflow-hidden"
-      style={{ background: "oklch(0.97 0.012 80)" }}
-    >
+    <div className="relative flex flex-col min-h-screen bg-[oklch(0.97_0.012_80)] overflow-hidden">
+      {/* Leaf accents */}
       <div
         className="absolute top-0 right-0 pointer-events-none"
         style={{ opacity: 0.15 }}
@@ -125,6 +96,7 @@ export function LoginPage() {
       </div>
 
       <div className="relative z-10 flex flex-col flex-1 px-6 pt-6 pb-8 max-w-sm mx-auto w-full">
+        {/* Logo + brand */}
         <motion.div
           className="flex items-center gap-3 mb-8"
           initial={{ opacity: 0, x: -12 }}
@@ -133,7 +105,9 @@ export function LoginPage() {
         >
           <div
             className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
-            style={{ boxShadow: "0 2px 8px oklch(0.55 0.14 145 / 0.2)" }}
+            style={{
+              boxShadow: "0 2px 8px oklch(0.55 0.14 145 / 0.2)",
+            }}
           >
             <img
               src="/assets/uploads/beige_and_green_minimal_ayurveda_company_logo_20260329_160220_0000-019d3d43-5763-7149-b499-c52ab9b218f8-1.jpg"
@@ -163,6 +137,7 @@ export function LoginPage() {
           </div>
         </motion.div>
 
+        {/* Heading */}
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: 10 }}
@@ -189,6 +164,7 @@ export function LoginPage() {
           </p>
         </motion.div>
 
+        {/* Form */}
         <motion.form
           onSubmit={handleLogin}
           className="flex flex-col gap-4"
@@ -196,6 +172,7 @@ export function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.18, duration: 0.45 }}
         >
+          {/* Username */}
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="login-username"
@@ -216,7 +193,12 @@ export function LoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
-              style={inputStyle}
+              style={{
+                fontFamily: "'DM Sans', system-ui, sans-serif",
+                background: "oklch(0.99 0.006 80)",
+                border: "1.5px solid oklch(0.88 0.03 80)",
+                color: "oklch(0.28 0.08 140)",
+              }}
               onFocus={(e) => {
                 e.target.style.borderColor = "oklch(0.55 0.14 145)";
                 e.target.style.boxShadow =
@@ -229,6 +211,7 @@ export function LoginPage() {
             />
           </div>
 
+          {/* Password */}
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="login-password"
@@ -250,7 +233,12 @@ export function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 pr-11 rounded-xl text-sm outline-none transition-all"
-                style={inputStyle}
+                style={{
+                  fontFamily: "'DM Sans', system-ui, sans-serif",
+                  background: "oklch(0.99 0.006 80)",
+                  border: "1.5px solid oklch(0.88 0.03 80)",
+                  color: "oklch(0.28 0.08 140)",
+                }}
                 onFocus={(e) => {
                   e.target.style.borderColor = "oklch(0.55 0.14 145)";
                   e.target.style.boxShadow =
@@ -277,6 +265,7 @@ export function LoginPage() {
             </div>
           </div>
 
+          {/* Error message */}
           {error && (
             <div
               data-ocid="login.error_state"
@@ -292,6 +281,7 @@ export function LoginPage() {
             </div>
           )}
 
+          {/* Submit */}
           <button
             type="submit"
             data-ocid="login.submit_button"
@@ -301,14 +291,14 @@ export function LoginPage() {
               fontFamily: "'DM Sans', system-ui, sans-serif",
               background: "oklch(0.52 0.18 145)",
               boxShadow: "0 4px 20px -2px oklch(0.52 0.18 145 / 0.32)",
-              opacity:
-                !loading && actorReady && username.trim() && password
-                  ? 1
-                  : 0.65,
               cursor:
                 !loading && actorReady && username.trim() && password
                   ? "pointer"
                   : "not-allowed",
+              opacity:
+                !loading && actorReady && username.trim() && password
+                  ? 1
+                  : 0.65,
             }}
           >
             {loading ? (
@@ -329,6 +319,7 @@ export function LoginPage() {
 
         <div className="flex-1" />
 
+        {/* Sign up link */}
         <motion.p
           className="text-center text-sm mt-4"
           style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
@@ -350,6 +341,7 @@ export function LoginPage() {
           </button>
         </motion.p>
 
+        {/* Footer */}
         <p
           className="mt-6 text-center text-xs"
           style={{
@@ -357,7 +349,7 @@ export function LoginPage() {
             color: "oklch(0.68 0.04 60)",
           }}
         >
-          &copy; {new Date().getFullYear()}. Built with love using{" "}
+          © {new Date().getFullYear()}. Built with love using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
             target="_blank"

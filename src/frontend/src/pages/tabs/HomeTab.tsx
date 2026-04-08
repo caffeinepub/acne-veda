@@ -10,6 +10,7 @@ import {
   Leaf,
   Moon,
   RefreshCw,
+  Shield,
   ShoppingBag,
   Sparkles,
   Sun,
@@ -30,6 +31,8 @@ type AssessmentResults = {
   acneType?: string;
   skinType?: string;
   phase?: string;
+  location?: string;
+  triggers?: string[];
 };
 
 const products = [
@@ -37,7 +40,7 @@ const products = [
     id: "wash",
     name: "Triphala Cleanser",
     benefit: "Gentle herbal cleanse",
-    reason: "Matches your skin type",
+    reason: "Matches your oily skin type",
     img: "/assets/generated/acne-facewash.dim_400x400.png",
   },
   {
@@ -63,8 +66,6 @@ const products = [
   },
 ];
 
-const GREEN = "oklch(0.52 0.18 145)";
-
 export function HomeTab() {
   const navigate = useNavigate();
   const { actor, isFetching: actorFetching } = useActor(createActor);
@@ -81,6 +82,7 @@ export function HomeTab() {
   const greeting =
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
+  // Assessment-incomplete popup logic
   const dismissed =
     sessionStorage.getItem("assessment_popup_dismissed") === "true";
   const [popupDismissed, setPopupDismissed] = useState(dismissed);
@@ -167,6 +169,7 @@ export function HomeTab() {
       prev.map((s) => (s.id === id ? { ...s, checked: !s.checked } : s)),
     );
   }
+
   function toggleNight(id: string) {
     setNightSteps((prev) =>
       prev.map((s) => (s.id === id ? { ...s, checked: !s.checked } : s)),
@@ -176,7 +179,7 @@ export function HomeTab() {
   return (
     <div
       className="relative h-full overflow-y-auto pb-20"
-      style={{ background: "oklch(0.97 0.012 80)" }}
+      style={{ background: "#F0F7FF" }}
     >
       {/* Assessment Incomplete Popup */}
       <AnimatePresence>
@@ -198,22 +201,26 @@ export function HomeTab() {
               exit={{ opacity: 0, scale: 0.94, y: 10 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               style={{
-                background: "oklch(1 0 0)",
-                boxShadow: "0 20px 60px oklch(0.55 0.14 145 / 0.2)",
+                background: "#FFFFFF",
+                boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
               }}
             >
+              {/* Popup header illustration */}
               <div
                 className="px-6 pt-6 pb-4"
-                style={{ background: "oklch(0.52 0.18 145 / 0.08)" }}
+                style={{
+                  background:
+                    "linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)",
+                }}
               >
                 <div className="flex items-start justify-between">
                   <div
                     className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                    style={{ background: "oklch(0.52 0.18 145 / 0.15)" }}
+                    style={{ background: "#BFDBFE" }}
                   >
                     <ClipboardList
                       className="w-7 h-7"
-                      style={{ color: GREEN }}
+                      style={{ color: "#1D4ED8" }}
                     />
                   </div>
                   <button
@@ -224,19 +231,18 @@ export function HomeTab() {
                     style={{ background: "rgba(255,255,255,0.7)" }}
                     aria-label="Dismiss popup"
                   >
-                    <X
-                      className="w-4 h-4"
-                      style={{ color: "oklch(0.5 0.04 60)" }}
-                    />
+                    <X className="w-4 h-4" style={{ color: "#64748B" }} />
                   </button>
                 </div>
               </div>
+
+              {/* Popup body */}
               <div className="px-6 py-5">
                 <h2
                   className="text-lg font-bold mb-2"
                   style={{
-                    fontFamily: "'Playfair Display', Georgia, serif",
-                    color: "oklch(0.22 0.07 140)",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    color: "#1E3A5F",
                   }}
                 >
                   Complete Your Assessment
@@ -244,35 +250,37 @@ export function HomeTab() {
                 <p
                   className="text-sm leading-relaxed mb-5"
                   style={{
-                    fontFamily: "'DM Sans', system-ui, sans-serif",
-                    color: "oklch(0.48 0.04 60)",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    color: "#475569",
                   }}
                 >
                   Get your personalized Ayurvedic treatment plan. It only takes
                   3 minutes.
                 </p>
+
                 <button
                   type="button"
                   data-ocid="home.primary_button"
                   onClick={() => navigate({ to: "/assessment/step1" })}
                   className="w-full py-3.5 rounded-2xl font-bold text-sm transition-all active:scale-[0.98]"
                   style={{
-                    background: GREEN,
+                    background: "linear-gradient(135deg, #3B82F6, #6366F1)",
                     color: "#fff",
-                    boxShadow: "0 4px 18px oklch(0.52 0.18 145 / 0.35)",
-                    fontFamily: "'DM Sans', system-ui, sans-serif",
+                    boxShadow: "0 4px 18px rgba(59,130,246,0.35)",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
                   }}
                 >
                   Start Assessment →
                 </button>
+
                 <button
                   type="button"
                   data-ocid="home.cancel_button"
                   onClick={handleDismiss}
                   className="w-full py-2.5 mt-2 text-sm font-medium transition-opacity hover:opacity-70"
                   style={{
-                    fontFamily: "'DM Sans', system-ui, sans-serif",
-                    color: "oklch(0.6 0.04 60)",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    color: "#94A3B8",
                     background: "transparent",
                   }}
                 >
@@ -287,7 +295,9 @@ export function HomeTab() {
       {/* Header */}
       <div
         className="px-4 pt-6 pb-4"
-        style={{ background: "oklch(0.52 0.18 145 / 0.06)" }}
+        style={{
+          background: "linear-gradient(135deg, #EFF6FF 0%, #F0F7FF 100%)",
+        }}
       >
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -297,8 +307,8 @@ export function HomeTab() {
           <p
             className="text-sm"
             style={{
-              fontFamily: "'DM Sans', system-ui, sans-serif",
-              color: "oklch(0.52 0.04 60)",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              color: "#64748B",
             }}
           >
             {greeting}, 👋
@@ -306,33 +316,33 @@ export function HomeTab() {
           <h1
             className="text-xl font-bold capitalize"
             style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
-              color: "oklch(0.22 0.07 140)",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              color: "#1E3A5F",
             }}
           >
             {username}
           </h1>
         </motion.div>
 
-        {/* Treatment summary */}
+        {/* Treatment summary pill */}
         <motion.div
           className="mt-4 rounded-2xl p-4"
           style={{
-            background: "oklch(1 0 0)",
-            boxShadow: "0 2px 12px oklch(0.55 0.14 145 / 0.08)",
-            border: "1px solid oklch(0.9 0.02 80)",
+            background: "#FFFFFF",
+            boxShadow: "0 2px 12px rgba(59,130,246,0.08)",
+            border: "1px solid #E2E8F0",
           }}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4" style={{ color: GREEN }} />
+            <Shield className="w-4 h-4" style={{ color: "#3B82F6" }} />
             <span
               className="text-xs font-semibold uppercase tracking-wide"
               style={{
-                fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: GREEN,
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                color: "#3B82F6",
               }}
             >
               Your Treatment Summary
@@ -342,8 +352,8 @@ export function HomeTab() {
             <Badge
               className="text-xs"
               style={{
-                background: "oklch(0.52 0.18 145 / 0.12)",
-                color: "oklch(0.32 0.14 145)",
+                background: "#DBEAFE",
+                color: "#1D4ED8",
                 border: "none",
               }}
             >
@@ -352,8 +362,8 @@ export function HomeTab() {
             <Badge
               className="text-xs"
               style={{
-                background: "oklch(0.62 0.12 145 / 0.12)",
-                color: "oklch(0.32 0.12 145)",
+                background: "#D1FAE5",
+                color: "#065F46",
                 border: "none",
               }}
             >
@@ -362,8 +372,8 @@ export function HomeTab() {
             <Badge
               className="text-xs"
               style={{
-                background: "oklch(0.65 0.2 35 / 0.12)",
-                color: "oklch(0.42 0.18 35)",
+                background: "#FEF3C7",
+                color: "#92400E",
                 border: "none",
               }}
             >
@@ -374,11 +384,12 @@ export function HomeTab() {
       </div>
 
       <div className="px-4 pt-2">
+        {/* Daily Routine Section */}
         <motion.h2
           className="text-sm font-bold uppercase tracking-wide mb-3"
           style={{
-            fontFamily: "'DM Sans', system-ui, sans-serif",
-            color: "oklch(0.52 0.04 60)",
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            color: "#64748B",
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -391,9 +402,9 @@ export function HomeTab() {
         <motion.div
           className="rounded-2xl p-4 mb-3"
           style={{
-            background: "oklch(1 0 0)",
-            boxShadow: "0 2px 12px oklch(0.55 0.14 145 / 0.06)",
-            border: "1px solid oklch(0.9 0.02 80)",
+            background: "#FFFFFF",
+            boxShadow: "0 2px 12px rgba(59,130,246,0.06)",
+            border: "1px solid #E2E8F0",
           }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -401,15 +412,12 @@ export function HomeTab() {
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Sun
-                className="w-4 h-4"
-                style={{ color: "oklch(0.65 0.2 70)" }}
-              />
+              <Sun className="w-4 h-4" style={{ color: "#F59E0B" }} />
               <span
                 className="text-sm font-semibold"
                 style={{
-                  fontFamily: "'DM Sans', system-ui, sans-serif",
-                  color: "oklch(0.22 0.07 140)",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  color: "#1E3A5F",
                 }}
               >
                 Morning Routine
@@ -419,14 +427,10 @@ export function HomeTab() {
               className="text-xs font-medium px-2 py-0.5 rounded-full"
               style={{
                 background:
-                  morningDone === morningSteps.length
-                    ? "oklch(0.52 0.18 145 / 0.12)"
-                    : "oklch(0.52 0.18 145 / 0.06)",
+                  morningDone === morningSteps.length ? "#D1FAE5" : "#EFF6FF",
                 color:
-                  morningDone === morningSteps.length
-                    ? "oklch(0.38 0.14 145)"
-                    : GREEN,
-                fontFamily: "'DM Sans', system-ui, sans-serif",
+                  morningDone === morningSteps.length ? "#065F46" : "#3B82F6",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
               }}
             >
               {morningDone}/{morningSteps.length} done
@@ -445,23 +449,18 @@ export function HomeTab() {
                   {step.checked ? (
                     <CheckCircle2
                       className="w-5 h-5"
-                      style={{ color: GREEN }}
+                      style={{ color: "#22C55E" }}
                     />
                   ) : (
-                    <Circle
-                      className="w-5 h-5"
-                      style={{ color: "oklch(0.75 0.04 60)" }}
-                    />
+                    <Circle className="w-5 h-5" style={{ color: "#CBD5E1" }} />
                   )}
                 </div>
                 <div>
                   <p
                     className="text-sm font-medium"
                     style={{
-                      fontFamily: "'DM Sans', system-ui, sans-serif",
-                      color: step.checked
-                        ? "oklch(0.65 0.04 60)"
-                        : "oklch(0.22 0.07 140)",
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      color: step.checked ? "#94A3B8" : "#1E3A5F",
                       textDecoration: step.checked ? "line-through" : "none",
                     }}
                   >
@@ -470,8 +469,8 @@ export function HomeTab() {
                   <p
                     className="text-xs"
                     style={{
-                      fontFamily: "'DM Sans', system-ui, sans-serif",
-                      color: "oklch(0.65 0.04 60)",
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      color: "#94A3B8",
                     }}
                   >
                     {step.description}
@@ -486,9 +485,9 @@ export function HomeTab() {
         <motion.div
           className="rounded-2xl p-4 mb-4"
           style={{
-            background: "oklch(1 0 0)",
-            boxShadow: "0 2px 12px oklch(0.55 0.14 145 / 0.06)",
-            border: "1px solid oklch(0.9 0.02 80)",
+            background: "#FFFFFF",
+            boxShadow: "0 2px 12px rgba(59,130,246,0.06)",
+            border: "1px solid #E2E8F0",
           }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -496,15 +495,12 @@ export function HomeTab() {
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Moon
-                className="w-4 h-4"
-                style={{ color: "oklch(0.58 0.18 250)" }}
-              />
+              <Moon className="w-4 h-4" style={{ color: "#8B5CF6" }} />
               <span
                 className="text-sm font-semibold"
                 style={{
-                  fontFamily: "'DM Sans', system-ui, sans-serif",
-                  color: "oklch(0.22 0.07 140)",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  color: "#1E3A5F",
                 }}
               >
                 Night Routine
@@ -514,14 +510,9 @@ export function HomeTab() {
               className="text-xs font-medium px-2 py-0.5 rounded-full"
               style={{
                 background:
-                  nightDone === nightSteps.length
-                    ? "oklch(0.52 0.18 145 / 0.12)"
-                    : "oklch(0.52 0.18 145 / 0.06)",
-                color:
-                  nightDone === nightSteps.length
-                    ? "oklch(0.38 0.14 145)"
-                    : GREEN,
-                fontFamily: "'DM Sans', system-ui, sans-serif",
+                  nightDone === nightSteps.length ? "#D1FAE5" : "#EFF6FF",
+                color: nightDone === nightSteps.length ? "#065F46" : "#3B82F6",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
               }}
             >
               {nightDone}/{nightSteps.length} done
@@ -540,23 +531,18 @@ export function HomeTab() {
                   {step.checked ? (
                     <CheckCircle2
                       className="w-5 h-5"
-                      style={{ color: GREEN }}
+                      style={{ color: "#22C55E" }}
                     />
                   ) : (
-                    <Circle
-                      className="w-5 h-5"
-                      style={{ color: "oklch(0.75 0.04 60)" }}
-                    />
+                    <Circle className="w-5 h-5" style={{ color: "#CBD5E1" }} />
                   )}
                 </div>
                 <div>
                   <p
                     className="text-sm font-medium"
                     style={{
-                      fontFamily: "'DM Sans', system-ui, sans-serif",
-                      color: step.checked
-                        ? "oklch(0.65 0.04 60)"
-                        : "oklch(0.22 0.07 140)",
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      color: step.checked ? "#94A3B8" : "#1E3A5F",
                       textDecoration: step.checked ? "line-through" : "none",
                     }}
                   >
@@ -565,8 +551,8 @@ export function HomeTab() {
                   <p
                     className="text-xs"
                     style={{
-                      fontFamily: "'DM Sans', system-ui, sans-serif",
-                      color: "oklch(0.65 0.04 60)",
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      color: "#94A3B8",
                     }}
                   >
                     {step.description}
@@ -577,12 +563,12 @@ export function HomeTab() {
           </div>
         </motion.div>
 
-        {/* Products */}
+        {/* Product Recommendations */}
         <motion.h2
           className="text-sm font-bold uppercase tracking-wide mb-3"
           style={{
-            fontFamily: "'DM Sans', system-ui, sans-serif",
-            color: "oklch(0.52 0.04 60)",
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            color: "#64748B",
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -603,15 +589,12 @@ export function HomeTab() {
               key={product.id}
               className="flex-shrink-0 w-36 rounded-2xl overflow-hidden"
               style={{
-                background: "oklch(1 0 0)",
-                boxShadow: "0 2px 8px oklch(0.55 0.14 145 / 0.08)",
-                border: "1px solid oklch(0.9 0.02 80)",
+                background: "#FFFFFF",
+                boxShadow: "0 2px 8px rgba(59,130,246,0.08)",
+                border: "1px solid #E2E8F0",
               }}
             >
-              <div
-                className="w-full h-24"
-                style={{ background: "oklch(0.52 0.18 145 / 0.04)" }}
-              >
+              <div className="w-full h-24" style={{ background: "#F8FAFF" }}>
                 <img
                   src={product.img}
                   alt={product.name}
@@ -625,8 +608,8 @@ export function HomeTab() {
                 <p
                   className="text-xs font-semibold leading-snug"
                   style={{
-                    fontFamily: "'DM Sans', system-ui, sans-serif",
-                    color: "oklch(0.22 0.07 140)",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    color: "#1E3A5F",
                   }}
                 >
                   {product.name}
@@ -634,8 +617,8 @@ export function HomeTab() {
                 <p
                   className="text-xs mt-0.5"
                   style={{
-                    fontFamily: "'DM Sans', system-ui, sans-serif",
-                    color: "oklch(0.6 0.04 60)",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    color: "#94A3B8",
                   }}
                 >
                   {product.benefit}
@@ -643,8 +626,8 @@ export function HomeTab() {
                 <p
                   className="text-xs mt-1 italic"
                   style={{
-                    fontFamily: "'DM Sans', system-ui, sans-serif",
-                    color: GREEN,
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    color: "#3B82F6",
                     fontSize: "10px",
                   }}
                 >
@@ -655,6 +638,7 @@ export function HomeTab() {
           ))}
         </motion.div>
 
+        {/* CTA buttons */}
         <motion.div
           className="mt-4 flex flex-col gap-3"
           initial={{ opacity: 0, y: 12 }}
@@ -666,32 +650,26 @@ export function HomeTab() {
             data-ocid="home.primary_button"
             className="w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
             style={{
-              background: GREEN,
+              background: "linear-gradient(135deg, #3B82F6, #6366F1)",
               color: "#fff",
-              boxShadow: "0 4px 16px oklch(0.52 0.18 145 / 0.35)",
-              fontFamily: "'DM Sans', system-ui, sans-serif",
+              boxShadow: "0 4px 16px rgba(59,130,246,0.35)",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
-            onClick={() => {
-              const el = document.createElement("div");
-              el.textContent = "Coming soon — product store launching soon! 🛒";
-              el.style.cssText =
-                "position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:oklch(0.22 0.07 140);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-family:'DM Sans',sans-serif;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.18)";
-              document.body.appendChild(el);
-              setTimeout(() => el.remove(), 3500);
-            }}
+            onClick={() => window.open("#", "_blank")}
           >
             <ShoppingBag className="w-4 h-4" />
             Buy Full Kit →
           </button>
+
           <button
             type="button"
             data-ocid="home.secondary_button"
             className="w-full py-3.5 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
             style={{
               background: "transparent",
-              border: "2px solid oklch(0.52 0.18 145 / 0.4)",
-              color: GREEN,
-              fontFamily: "'DM Sans', system-ui, sans-serif",
+              border: "2px solid #3B82F6",
+              color: "#3B82F6",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
             onClick={() => navigate({ to: "/assessment/step1" })}
           >
@@ -704,8 +682,8 @@ export function HomeTab() {
         <motion.div
           className="mt-4 rounded-2xl p-4 flex gap-3"
           style={{
-            background: "oklch(0.52 0.18 145 / 0.06)",
-            border: "1px solid oklch(0.52 0.18 145 / 0.18)",
+            background: "#F0FDF4",
+            border: "1px solid #BBF7D0",
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -713,14 +691,14 @@ export function HomeTab() {
         >
           <Leaf
             className="w-4 h-4 flex-shrink-0 mt-0.5"
-            style={{ color: GREEN }}
+            style={{ color: "#16A34A" }}
           />
           <div>
             <p
               className="text-xs font-semibold mb-0.5"
               style={{
-                fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: "oklch(0.38 0.14 145)",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                color: "#15803D",
               }}
             >
               Ayurvedic Tip of the Day
@@ -728,8 +706,8 @@ export function HomeTab() {
             <p
               className="text-xs leading-relaxed"
               style={{
-                fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: "oklch(0.38 0.1 140)",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                color: "#166534",
               }}
             >
               Drink warm water with Triphala before bed to support natural
@@ -738,11 +716,12 @@ export function HomeTab() {
           </div>
         </motion.div>
 
+        {/* Dosha info */}
         <motion.div
           className="mt-3 rounded-2xl p-4 flex gap-3"
           style={{
-            background: "oklch(0.65 0.2 35 / 0.06)",
-            border: "1px solid oklch(0.65 0.2 35 / 0.2)",
+            background: "#FFF7ED",
+            border: "1px solid #FED7AA",
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -750,14 +729,14 @@ export function HomeTab() {
         >
           <Sparkles
             className="w-4 h-4 flex-shrink-0 mt-0.5"
-            style={{ color: "oklch(0.58 0.2 35)" }}
+            style={{ color: "#EA580C" }}
           />
           <div>
             <p
               className="text-xs font-semibold mb-0.5"
               style={{
-                fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: "oklch(0.48 0.18 35)",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                color: "#C2410C",
               }}
             >
               Pitta Dosha Balance
@@ -765,8 +744,8 @@ export function HomeTab() {
             <p
               className="text-xs leading-relaxed"
               style={{
-                fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: "oklch(0.42 0.14 35)",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                color: "#9A3412",
               }}
             >
               Inflammatory acne often indicates elevated Pitta. Cooling foods
@@ -778,8 +757,8 @@ export function HomeTab() {
         <motion.div
           className="mt-3 rounded-2xl p-4 flex gap-3"
           style={{
-            background: "oklch(0.62 0.18 220 / 0.06)",
-            border: "1px solid oklch(0.62 0.18 220 / 0.2)",
+            background: "#EFF6FF",
+            border: "1px solid #BFDBFE",
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -787,14 +766,14 @@ export function HomeTab() {
         >
           <Droplets
             className="w-4 h-4 flex-shrink-0 mt-0.5"
-            style={{ color: "oklch(0.52 0.18 220)" }}
+            style={{ color: "#3B82F6" }}
           />
           <div>
             <p
               className="text-xs font-semibold mb-0.5"
               style={{
-                fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: "oklch(0.42 0.16 220)",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                color: "#1D4ED8",
               }}
             >
               Hydration Reminder
@@ -802,8 +781,8 @@ export function HomeTab() {
             <p
               className="text-xs leading-relaxed"
               style={{
-                fontFamily: "'DM Sans', system-ui, sans-serif",
-                color: "oklch(0.38 0.14 220)",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                color: "#1E40AF",
               }}
             >
               Drink 8-10 glasses of water daily. Good hydration supports skin
@@ -812,17 +791,15 @@ export function HomeTab() {
           </div>
         </motion.div>
 
-        <p
-          className="text-center text-xs py-6"
-          style={{ color: "oklch(0.65 0.04 60)" }}
-        >
-          &copy; {new Date().getFullYear()}. Built with love using{" "}
+        {/* Footer */}
+        <p className="text-center text-xs py-6" style={{ color: "#94A3B8" }}>
+          © {new Date().getFullYear()}. Built with ❤️ using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
             target="_blank"
             rel="noopener noreferrer"
             className="underline"
-            style={{ color: GREEN }}
+            style={{ color: "#3B82F6" }}
           >
             caffeine.ai
           </a>
