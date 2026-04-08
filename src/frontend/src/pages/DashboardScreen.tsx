@@ -207,7 +207,7 @@ export function DashboardScreen() {
               <button
                 type="button"
                 data-ocid="dashboard.primary_button"
-                onClick={() => navigate({ to: "/main" })}
+                onClick={() => navigate({ to: "/scan" })}
                 className="w-full py-3 rounded-full text-white font-semibold text-sm transition-all active:scale-[0.98] hover:opacity-90"
                 style={{
                   fontFamily: "'DM Sans', system-ui, sans-serif",
@@ -265,7 +265,7 @@ export function DashboardScreen() {
               <button
                 type="button"
                 data-ocid="dashboard.edit_button"
-                onClick={() => navigate({ to: "/main" })}
+                onClick={() => navigate({ to: "/scan" })}
                 className="w-full py-3 rounded-full font-semibold text-sm transition-all active:scale-[0.98] hover:opacity-90"
                 style={{
                   fontFamily: "'DM Sans', system-ui, sans-serif",

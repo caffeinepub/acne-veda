@@ -1,9 +1,8 @@
-import { useActor } from "@caffeineai/core-infrastructure";
+import { useActor } from "@/hooks/useActor";
 import { useNavigate } from "@tanstack/react-router";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
-import { createActor } from "../backend";
 
 async function hashPassword(plain: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -15,7 +14,7 @@ async function hashPassword(plain: string): Promise<string> {
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { actor, isFetching } = useActor(createActor);
+  const { actor, isFetching } = useActor();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +31,7 @@ export function LoginPage() {
     setLoading(true);
     try {
       const hash = await hashPassword(password);
-      await actor.loginUser(username.trim(), hash);
+      await actor.login(username.trim(), hash);
       localStorage.setItem("acneveda_user", username.trim());
       // Check if user has completed assessment; route accordingly
       try {

@@ -1,9 +1,7 @@
 import Map "mo:core/Map";
-import Array "mo:core/Array";
+import Text "mo:core/Text";
 import Runtime "mo:core/Runtime";
-import Migration "migration";
 
-(with migration = Migration.run)
 actor {
   public type PasswordHash = Text;
 
@@ -11,21 +9,23 @@ actor {
     passwordHash : PasswordHash;
   };
 
-  type ConsultationResult = {
-    flowType : Text;
-    conditionScore : Nat;
-    primaryConcern : Text;
-    severity : Text;
-    doshaImbalance : Text;
-    rootCauses : Text;
-    reportJson : Text;
-    timestamp : Int;
+  // Stable storage so data survives canister upgrades
+  stable var userEntries : [(Text, User)] = [];
+  stable var historyEntries : [(Text, Bool)] = [];
+
+  // Working maps rebuilt from stable storage
+  var users : Map.Map<Text, User> = Map.fromArray(userEntries);
+  var history : Map.Map<Text, Bool> = Map.fromArray(historyEntries);
+
+  system func preupgrade() {
+    userEntries := users.toArray();
+    historyEntries := history.toArray();
   };
 
-  // State persists automatically via enhanced orthogonal persistence
-  let users : Map.Map<Text, User> = Map.empty<Text, User>();
-  let history : Map.Map<Text, Bool> = Map.empty<Text, Bool>();
-  let consultations : Map.Map<Text, [ConsultationResult]> = Map.empty<Text, [ConsultationResult]>();
+  system func postupgrade() {
+    users := Map.fromArray(userEntries);
+    history := Map.fromArray(historyEntries);
+  };
 
   // Register a new user
   public shared func registerUser(username : Text, passwordHash : PasswordHash) : async () {
@@ -35,8 +35,8 @@ actor {
     users.add(username, { passwordHash });
   };
 
-  // Log in a user (called loginUser by the frontend)
-  public query func loginUser(username : Text, passwordHash : PasswordHash) : async () {
+  // Log in a user
+  public query func login(username : Text, passwordHash : PasswordHash) : async () {
     switch (users.get(username)) {
       case (null) { Runtime.trap("User not found") };
       case (?user) {
@@ -56,63 +56,10 @@ actor {
   };
 
   // Check if a user has any assessment history
-  // Returns false for unknown users (no trap) so new users work correctly
   public query func hasHistory(username : Text) : async Bool {
     switch (history.get(username)) {
       case (?h) { h };
       case (null) { false };
-    };
-  };
-
-  // Save a consultation result
-  public shared func saveConsultationResult(
-    username : Text,
-    flowType : Text,
-    conditionScore : Nat,
-    primaryConcern : Text,
-    severity : Text,
-    doshaImbalance : Text,
-    rootCauses : Text,
-    reportJson : Text,
-    timestamp : Int
-  ) : async () {
-    if (not users.containsKey(username)) {
-      Runtime.trap("User not found");
-    };
-    let result : ConsultationResult = {
-      flowType;
-      conditionScore;
-      primaryConcern;
-      severity;
-      doshaImbalance;
-      rootCauses;
-      reportJson;
-      timestamp;
-    };
-    switch (consultations.get(username)) {
-      case (null) {
-        consultations.add(username, [result]);
-      };
-      case (?existing) {
-        consultations.add(username, existing.concat([result]));
-      };
-    };
-    // Also mark as having history
-    history.add(username, true);
-  };
-
-  // Get consultation results for a user (max 10 most recent)
-  public query func getConsultationResults(username : Text) : async [ConsultationResult] {
-    switch (consultations.get(username)) {
-      case (null) { [] };
-      case (?results) {
-        let size = results.size();
-        if (size <= 10) {
-          results
-        } else {
-          results.sliceToArray(size - 10, size)
-        };
-      };
     };
   };
 };

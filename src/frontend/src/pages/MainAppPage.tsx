@@ -1,6 +1,6 @@
 import { Home, MessageCircle, ShoppingBag, User } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChatTab } from "./tabs/ChatTab";
 import { HomeTab } from "./tabs/HomeTab";
 import { ProductsTab } from "./tabs/ProductsTab";
@@ -15,37 +15,8 @@ const TABS: { id: Tab; label: string; icon: typeof Home }[] = [
   { id: "profile", label: "Profile", icon: User },
 ];
 
-function getInitialTab(): Tab {
-  // Check URL search params first
-  if (typeof window !== "undefined") {
-    const params = new URLSearchParams(window.location.search);
-    const tabParam = params.get("tab");
-    if (
-      tabParam === "chat" ||
-      tabParam === "home" ||
-      tabParam === "products" ||
-      tabParam === "profile"
-    ) {
-      return tabParam as Tab;
-    }
-    // Fallback: check sessionStorage signal
-    const pending = sessionStorage.getItem("acneveda_pending_tab");
-    if (pending === "chat") {
-      return "chat";
-    }
-  }
-  return "home";
-}
-
 export function MainAppPage() {
-  const [activeTab, setActiveTab] = useState<Tab>(getInitialTab);
-
-  // Clear the sessionStorage signal once we've consumed it
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      sessionStorage.removeItem("acneveda_pending_tab");
-    }
-  }, []);
+  const [activeTab, setActiveTab] = useState<Tab>("home");
 
   const renderTab = () => {
     switch (activeTab) {

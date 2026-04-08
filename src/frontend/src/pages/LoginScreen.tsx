@@ -11,7 +11,7 @@ export function LoginScreen() {
 
   function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
-    navigate({ to: "/main" });
+    navigate({ to: "/dashboard" });
   }
 
   return (
@@ -255,7 +255,7 @@ export function LoginScreen() {
           <button
             data-ocid="login.secondary_button"
             type="button"
-            onClick={() => navigate({ to: "/main" })}
+            onClick={() => navigate({ to: "/dashboard" })}
             className="flex items-center gap-2.5 px-5 py-2.5 rounded-full text-sm font-medium transition-all active:scale-[0.97] hover:shadow-md"
             style={{
               fontFamily: "'DM Sans', system-ui, sans-serif",
@@ -298,7 +298,7 @@ export function LoginScreen() {
           <button
             data-ocid="login.cancel_button"
             type="button"
-            onClick={() => navigate({ to: "/main" })}
+            onClick={() => navigate({ to: "/dashboard" })}
             className="flex items-center gap-2.5 px-5 py-2.5 rounded-full text-sm font-medium transition-all active:scale-[0.97] hover:shadow-md"
             style={{
               fontFamily: "'DM Sans', system-ui, sans-serif",

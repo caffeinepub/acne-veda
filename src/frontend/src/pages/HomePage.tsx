@@ -193,7 +193,7 @@ export function HomePage() {
                 className="rounded-full px-8"
                 data-ocid="home.scan_button"
               >
-                <Link to="/main">
+                <Link to="/scan">
                   <ScanLine className="w-5 h-5 mr-2" /> Analyse My Skin
                 </Link>
               </Button>
@@ -439,7 +439,7 @@ export function HomePage() {
               className="rounded-full px-8"
               data-ocid="treatments.scan_button"
             >
-              <Link to="/main">
+              <Link to="/scan">
                 Get My Treatment Plan <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
             </Button>

@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { useActor } from "@caffeineai/core-infrastructure";
+import { useActor } from "@/hooks/useActor";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import {
@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { createActor } from "../../backend";
 
 type RoutineStep = {
   id: string;
@@ -68,7 +67,7 @@ const products = [
 
 export function HomeTab() {
   const navigate = useNavigate();
-  const { actor, isFetching: actorFetching } = useActor(createActor);
+  const { actor, isFetching: actorFetching } = useActor();
 
   const username = localStorage.getItem("acneveda_user") ?? "User";
   const rawResults = sessionStorage.getItem("acnevedaResults");
