@@ -70,10 +70,11 @@ export default {
           border: "oklch(var(--sidebar-border))",
           ring: "oklch(var(--sidebar-ring))",
         },
-        gold: "oklch(var(--gold))",
+        gold: "oklch(var(--sage-green))",
         terracotta: "oklch(var(--terracotta))",
-        sage: "oklch(var(--sage))",
-        cream: "oklch(var(--cream))",
+        sage: "oklch(var(--sage-green))",
+        cream: "oklch(var(--cream-bg))",
+        "warm-white": "oklch(var(--warm-white))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -82,7 +83,9 @@ export default {
       },
       boxShadow: {
         xs: "0 1px 2px 0 rgba(0,0,0,0.05)",
-        warm: "0 4px 24px -4px oklch(0.65 0.18 60 / 0.15)",
+        subtle: "0 2px 4px 0 rgba(0,0,0,0.08)",
+        elevated: "0 8px 16px -2px rgba(0,0,0,0.1)",
+        ayurveda: "0 4px 20px -4px oklch(0.58 0.14 146 / 0.12)",
       },
       keyframes: {
         "accordion-down": {

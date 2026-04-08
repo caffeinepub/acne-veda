@@ -1,6 +1,6 @@
 import { Home, MessageCircle, ShoppingBag, User } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatTab } from "./tabs/ChatTab";
 import { HomeTab } from "./tabs/HomeTab";
 import { ProductsTab } from "./tabs/ProductsTab";
@@ -15,8 +15,48 @@ const TABS: { id: Tab; label: string; icon: typeof Home }[] = [
   { id: "profile", label: "Profile", icon: User },
 ];
 
+function getInitialTab(): Tab {
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get("tab");
+    if (
+      tabParam === "chat" ||
+      tabParam === "home" ||
+      tabParam === "products" ||
+      tabParam === "profile"
+    ) {
+      return tabParam as Tab;
+    }
+    const pending = sessionStorage.getItem("acneveda_pending_tab");
+    if (
+      pending === "chat" ||
+      pending === "home" ||
+      pending === "products" ||
+      pending === "profile"
+    ) {
+      return pending as Tab;
+    }
+  }
+  return "home";
+}
+
 export function MainAppPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("home");
+  const [activeTab, setActiveTab] = useState<Tab>(getInitialTab);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("acneveda_pending_tab");
+    }
+  }, []);
+
+  // Sync URL param when tab changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", activeTab);
+      window.history.replaceState(null, "", url.toString());
+    }
+  }, [activeTab]);
 
   const renderTab = () => {
     switch (activeTab) {
@@ -36,8 +76,8 @@ export function MainAppPage() {
       className="flex flex-col min-h-screen relative mx-auto"
       style={{
         maxWidth: "430px",
-        background: "#F0F7FF",
-        fontFamily: "'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif",
+        background: "#FAF7F2",
+        fontFamily: "'DM Sans', system-ui, sans-serif",
       }}
     >
       {/* Main content area */}
@@ -49,10 +89,10 @@ export function MainAppPage() {
           <motion.div
             key={activeTab}
             className="absolute inset-0"
-            initial={{ opacity: 0, x: 12 }}
+            initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -12 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.18, ease: "easeInOut" }}
           >
             {renderTab()}
           </motion.div>
@@ -65,8 +105,8 @@ export function MainAppPage() {
         style={{
           maxWidth: "430px",
           background: "#FFFFFF",
-          borderTop: "1px solid #E2E8F0",
-          boxShadow: "0 -4px 16px rgba(0,0,0,0.06)",
+          borderTop: "1px solid #E8E0D6",
+          boxShadow: "0 -4px 20px rgba(74,104,76,0.08)",
           height: "64px",
           zIndex: 50,
         }}
@@ -82,22 +122,27 @@ export function MainAppPage() {
                 data-ocid={`nav.${tab.id}_tab`}
                 onClick={() => setActiveTab(tab.id)}
                 className="flex-1 flex flex-col items-center justify-center gap-0.5 transition-all active:scale-90"
+                aria-label={tab.label}
               >
                 <div
-                  className="w-9 h-6 rounded-full flex items-center justify-center transition-all"
+                  className="w-10 h-6 rounded-full flex items-center justify-center transition-all"
                   style={{
-                    background: isActive ? "#EFF6FF" : "transparent",
+                    background: isActive
+                      ? "oklch(0.94 0.04 146)"
+                      : "transparent",
                   }}
                 >
                   <Icon
                     className="w-5 h-5 transition-colors"
-                    style={{ color: isActive ? "#3B82F6" : "#94A3B8" }}
+                    style={{
+                      color: isActive ? "oklch(0.48 0.14 146)" : "#A89880",
+                    }}
                   />
                 </div>
                 <span
-                  className="text-xs font-medium transition-colors"
+                  className="font-medium transition-colors"
                   style={{
-                    color: isActive ? "#3B82F6" : "#94A3B8",
+                    color: isActive ? "oklch(0.48 0.14 146)" : "#A89880",
                     fontSize: "10px",
                   }}
                 >

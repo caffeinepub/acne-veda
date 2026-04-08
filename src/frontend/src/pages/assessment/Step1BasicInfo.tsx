@@ -8,13 +8,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { useNavigate } from "@tanstack/react-router";
-import { ShieldCheck } from "lucide-react";
-import { motion } from "motion/react";
+import { Brain, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 
 export function Step1BasicInfo() {
-  const navigate = useNavigate();
   const username =
     typeof window !== "undefined"
       ? (localStorage.getItem("acneveda_user") ?? "there")
@@ -24,9 +22,25 @@ export function Step1BasicInfo() {
   const [age, setAge] = useState([24]);
   const [sex, setSex] = useState<string | null>(null);
   const [occupation, setOccupation] = useState<string | null>(null);
+  const [initializing, setInitializing] = useState(false);
 
   function handleContinue() {
-    navigate({ to: "/assessment/step2" });
+    // Save basic info to localStorage for use in chat
+    if (typeof window !== "undefined") {
+      localStorage.setItem("acneveda_fullname", fullName);
+      localStorage.setItem("acneveda_age", String(age[0]));
+      if (sex) localStorage.setItem("acneveda_sex", sex);
+      if (occupation) localStorage.setItem("acneveda_occupation", occupation);
+      // Signal that chat tab should open on arrival and show entry question
+      sessionStorage.setItem("acneveda_pending_tab", "chat");
+      sessionStorage.setItem("acneveda_chat_new_consultation", "1");
+    }
+
+    // Show brief "Initializing AI…" overlay, then navigate to /chat (full-screen consultation)
+    setInitializing(true);
+    setTimeout(() => {
+      window.location.href = "/chat";
+    }, 1600);
   }
 
   return (
@@ -61,8 +75,87 @@ export function Step1BasicInfo() {
         </svg>
       </div>
 
+      {/* AI Initializing overlay */}
+      <AnimatePresence>
+        {initializing && (
+          <motion.div
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+            style={{ background: "oklch(0.97 0.012 80)" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="flex flex-col items-center gap-6 text-center px-8"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <div
+                className="w-20 h-20 rounded-full flex items-center justify-center"
+                style={{
+                  background: "oklch(0.52 0.18 145 / 0.12)",
+                  border: "2px solid oklch(0.52 0.18 145 / 0.3)",
+                }}
+              >
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 2,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: "linear",
+                  }}
+                >
+                  <Brain
+                    className="w-9 h-9"
+                    style={{ color: "oklch(0.48 0.18 145)" }}
+                  />
+                </motion.div>
+              </div>
+              <div>
+                <h2
+                  className="text-2xl font-bold mb-2"
+                  style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    color: "oklch(0.22 0.07 140)",
+                  }}
+                >
+                  Initializing AI…
+                </h2>
+                <p
+                  className="text-sm"
+                  style={{
+                    fontFamily: "'DM Sans', system-ui, sans-serif",
+                    color: "oklch(0.52 0.04 60)",
+                  }}
+                >
+                  Preparing your personalized consultation with Dr. Vaidya
+                </p>
+              </div>
+              <div className="flex gap-1.5">
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="w-2 h-2 rounded-full"
+                    style={{ background: "oklch(0.52 0.18 145)" }}
+                    animate={{ opacity: [0.3, 1, 0.3] }}
+                    transition={{
+                      duration: 0.8,
+                      repeat: Number.POSITIVE_INFINITY,
+                      delay: i * 0.18,
+                      ease: "easeInOut",
+                    }}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Scrollable content area */}
-      <div className="flex-1 overflow-y-auto pb-28 px-5 pt-10 max-w-sm mx-auto w-full">
+      <div className="flex-1 overflow-y-auto pb-36 px-5 pt-10 max-w-sm mx-auto w-full">
         {/* Progress */}
         <motion.div
           className="mb-6"
@@ -78,7 +171,7 @@ export function Step1BasicInfo() {
                 color: "oklch(0.52 0.14 145)",
               }}
             >
-              Step 1 of 3
+              Step 1 of 1
             </span>
             <span
               className="text-xs"
@@ -87,7 +180,7 @@ export function Step1BasicInfo() {
                 color: "oklch(0.6 0.04 60)",
               }}
             >
-              33%
+              Basic Info
             </span>
           </div>
           <div
@@ -98,7 +191,7 @@ export function Step1BasicInfo() {
               className="h-1.5 rounded-full"
               style={{ background: "oklch(0.52 0.18 145)" }}
               initial={{ width: 0 }}
-              animate={{ width: "33%" }}
+              animate={{ width: "100%" }}
               transition={{ duration: 0.7, ease: "easeOut" }}
             />
           </div>
@@ -374,6 +467,79 @@ export function Step1BasicInfo() {
             </Select>
           </div>
         </motion.div>
+
+        {/* What happens next preview */}
+        <motion.div
+          className="mt-6 p-4 rounded-3xl"
+          style={{
+            background: "oklch(0.52 0.18 145 / 0.06)",
+            border: "1px solid oklch(0.52 0.18 145 / 0.18)",
+          }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.32 }}
+        >
+          <p
+            className="text-xs font-semibold uppercase tracking-wider mb-3"
+            style={{
+              fontFamily: "'DM Sans', system-ui, sans-serif",
+              color: "oklch(0.42 0.14 145)",
+            }}
+          >
+            What happens next
+          </p>
+          <div className="flex flex-col gap-2.5">
+            {[
+              {
+                icon: MessageCircle,
+                label: "AI Chat Consultation",
+                desc: "Dr. Vaidya asks smart, targeted questions",
+              },
+              {
+                icon: Sparkles,
+                label: "Skin/Hair Analysis",
+                desc: "AI scan for accurate acne type detection",
+              },
+              {
+                icon: Brain,
+                label: "Personalized Report",
+                desc: "Ayurvedic treatment plan & diet tips",
+              },
+            ].map(({ icon: Icon, label, desc }) => (
+              <div key={label} className="flex items-center gap-3">
+                <div
+                  className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: "oklch(0.52 0.18 145 / 0.12)" }}
+                >
+                  <Icon
+                    className="w-4 h-4"
+                    style={{ color: "oklch(0.48 0.18 145)" }}
+                  />
+                </div>
+                <div>
+                  <p
+                    className="text-xs font-semibold"
+                    style={{
+                      fontFamily: "'DM Sans', system-ui, sans-serif",
+                      color: "oklch(0.32 0.1 140)",
+                    }}
+                  >
+                    {label}
+                  </p>
+                  <p
+                    className="text-xs"
+                    style={{
+                      fontFamily: "'DM Sans', system-ui, sans-serif",
+                      color: "oklch(0.55 0.04 60)",
+                    }}
+                  >
+                    {desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
 
       {/* Sticky CTA */}
@@ -389,6 +555,7 @@ export function Step1BasicInfo() {
             type="button"
             data-ocid="assessment.step1.submit_button"
             onClick={handleContinue}
+            disabled={initializing}
             className="w-full h-14 text-base font-semibold rounded-2xl transition-all active:scale-[0.98] hover:opacity-90 text-white"
             style={{
               fontFamily: "'DM Sans', system-ui, sans-serif",
@@ -397,7 +564,7 @@ export function Step1BasicInfo() {
               border: "none",
             }}
           >
-            Continue to Assessment →
+            {initializing ? "Initializing AI…" : "Start AI Analysis →"}
           </Button>
         </div>
       </div>

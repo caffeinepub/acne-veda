@@ -1,4 +1,4 @@
-import { useActor } from "@/hooks/useActor";
+import { useActor } from "@caffeineai/core-infrastructure";
 import { useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
+import { createActor } from "../backend";
 
 async function hashPassword(plain: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -35,7 +36,7 @@ function getChecks(pw: string): StrengthCheck[] {
 
 export function SignupPage() {
   const navigate = useNavigate();
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching } = useActor(createActor);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

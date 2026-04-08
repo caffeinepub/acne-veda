@@ -6,7 +6,7 @@ type ConsultationResult =
    flowType: text;
    primaryConcern: text;
    reportJson: text;
-   rootCauses: text;
+   rootCauses: vec text;
    severity: text;
    timestamp: int;
  };
@@ -18,5 +18,5 @@ service : {
   registerUser: (username: text, passwordHash: PasswordHash) -> ();
   saveConsultationResult: (username: text, flowType: text, conditionScore:
    nat, primaryConcern: text, severity: text, doshaImbalance: text,
-   rootCauses: text, reportJson: text, timestamp: int) -> ();
+   rootCauses: vec text, reportJson: text, timestamp: int) -> ();
 }

@@ -90,11 +90,23 @@ export class ExternalBlob {
     }
 }
 export type PasswordHash = string;
+export interface ConsultationResult {
+    conditionScore: bigint;
+    flowType: string;
+    reportJson: string;
+    timestamp: bigint;
+    rootCauses: Array<string>;
+    doshaImbalance: string;
+    severity: string;
+    primaryConcern: string;
+}
 export interface backendInterface {
     addAssessmentHistory(username: string): Promise<void>;
+    getConsultationResults(username: string): Promise<Array<ConsultationResult>>;
     hasHistory(username: string): Promise<boolean>;
-    login(username: string, passwordHash: PasswordHash): Promise<void>;
+    loginUser(username: string, passwordHash: PasswordHash): Promise<void>;
     registerUser(username: string, passwordHash: PasswordHash): Promise<void>;
+    saveConsultationResult(username: string, flowType: string, conditionScore: bigint, primaryConcern: string, severity: string, doshaImbalance: string, rootCauses: Array<string>, reportJson: string, timestamp: bigint): Promise<void>;
 }
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
@@ -112,6 +124,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getConsultationResults(arg0: string): Promise<Array<ConsultationResult>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getConsultationResults(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getConsultationResults(arg0);
+            return result;
+        }
+    }
     async hasHistory(arg0: string): Promise<boolean> {
         if (this.processError) {
             try {
@@ -126,17 +152,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async login(arg0: string, arg1: PasswordHash): Promise<void> {
+    async loginUser(arg0: string, arg1: PasswordHash): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.login(arg0, arg1);
+                const result = await this.actor.loginUser(arg0, arg1);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.login(arg0, arg1);
+            const result = await this.actor.loginUser(arg0, arg1);
             return result;
         }
     }
@@ -151,6 +177,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.registerUser(arg0, arg1);
+            return result;
+        }
+    }
+    async saveConsultationResult(arg0: string, arg1: string, arg2: bigint, arg3: string, arg4: string, arg5: string, arg6: Array<string>, arg7: string, arg8: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.saveConsultationResult(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.saveConsultationResult(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
             return result;
         }
     }

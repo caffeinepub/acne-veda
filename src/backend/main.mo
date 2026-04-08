@@ -1,7 +1,9 @@
 import Map "mo:core/Map";
-import Text "mo:core/Text";
+import Array "mo:core/Array";
 import Runtime "mo:core/Runtime";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   public type PasswordHash = Text;
 
@@ -9,23 +11,21 @@ actor {
     passwordHash : PasswordHash;
   };
 
-  // Stable storage so data survives canister upgrades
-  stable var userEntries : [(Text, User)] = [];
-  stable var historyEntries : [(Text, Bool)] = [];
-
-  // Working maps rebuilt from stable storage
-  var users : Map.Map<Text, User> = Map.fromArray(userEntries);
-  var history : Map.Map<Text, Bool> = Map.fromArray(historyEntries);
-
-  system func preupgrade() {
-    userEntries := users.toArray();
-    historyEntries := history.toArray();
+  type ConsultationResult = {
+    flowType : Text;
+    conditionScore : Nat;
+    primaryConcern : Text;
+    severity : Text;
+    doshaImbalance : Text;
+    rootCauses : [Text];
+    reportJson : Text;
+    timestamp : Int;
   };
 
-  system func postupgrade() {
-    users := Map.fromArray(userEntries);
-    history := Map.fromArray(historyEntries);
-  };
+  // State persists automatically via enhanced orthogonal persistence
+  let users : Map.Map<Text, User> = Map.empty<Text, User>();
+  let history : Map.Map<Text, Bool> = Map.empty<Text, Bool>();
+  let consultations : Map.Map<Text, [ConsultationResult]> = Map.empty<Text, [ConsultationResult]>();
 
   // Register a new user
   public shared func registerUser(username : Text, passwordHash : PasswordHash) : async () {
@@ -35,8 +35,8 @@ actor {
     users.add(username, { passwordHash });
   };
 
-  // Log in a user
-  public query func login(username : Text, passwordHash : PasswordHash) : async () {
+  // Log in a user — query validates username and password hash
+  public query func loginUser(username : Text, passwordHash : PasswordHash) : async () {
     switch (users.get(username)) {
       case (null) { Runtime.trap("User not found") };
       case (?user) {
@@ -47,7 +47,7 @@ actor {
     };
   };
 
-  // Add an assessment to the history
+  // Mark user as having completed assessment
   public shared func addAssessmentHistory(username : Text) : async () {
     if (not users.containsKey(username)) {
       Runtime.trap("User not found");
@@ -55,11 +55,68 @@ actor {
     history.add(username, true);
   };
 
-  // Check if a user has any assessment history
+  // Returns false for unknown users (no trap) so new users work correctly
   public query func hasHistory(username : Text) : async Bool {
     switch (history.get(username)) {
       case (?h) { h };
       case (null) { false };
+    };
+  };
+
+  // Save a consultation result; keeps max 10 most recent per user
+  public shared func saveConsultationResult(
+    username : Text,
+    flowType : Text,
+    conditionScore : Nat,
+    primaryConcern : Text,
+    severity : Text,
+    doshaImbalance : Text,
+    rootCauses : [Text],
+    reportJson : Text,
+    timestamp : Int
+  ) : async () {
+    if (not users.containsKey(username)) {
+      Runtime.trap("User not found");
+    };
+    let result : ConsultationResult = {
+      flowType;
+      conditionScore;
+      primaryConcern;
+      severity;
+      doshaImbalance;
+      rootCauses;
+      reportJson;
+      timestamp;
+    };
+    let updated : [ConsultationResult] = switch (consultations.get(username)) {
+      case (null) { [result] };
+      case (?existing) {
+        let appended = existing.concat([result]);
+        let size = appended.size();
+        if (size > 10) {
+          appended.sliceToArray(size - 10, size)
+        } else {
+          appended
+        };
+      };
+    };
+    consultations.add(username, updated);
+    // Also mark as having history
+    history.add(username, true);
+  };
+
+  // Get consultation results for a user (up to 10 most recent)
+  public query func getConsultationResults(username : Text) : async [ConsultationResult] {
+    switch (consultations.get(username)) {
+      case (null) { [] };
+      case (?results) {
+        let size = results.size();
+        if (size <= 10) {
+          results
+        } else {
+          results.sliceToArray(size - 10, size)
+        };
+      };
     };
   };
 };

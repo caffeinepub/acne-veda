@@ -167,7 +167,7 @@ export function WelcomeScreen() {
           <button
             type="button"
             data-ocid="welcome.primary_button"
-            onClick={() => navigate({ to: "/dashboard" })}
+            onClick={() => navigate({ to: "/signup" })}
             className="w-full py-3.5 rounded-full text-white font-semibold text-base transition-all active:scale-[0.98] hover:opacity-90"
             style={{
               fontFamily: "'DM Sans', system-ui, sans-serif",
