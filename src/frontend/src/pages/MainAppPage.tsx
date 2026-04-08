@@ -1,6 +1,6 @@
 import { Home, MessageCircle, ShoppingBag, User } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatTab } from "./tabs/ChatTab";
 import { HomeTab } from "./tabs/HomeTab";
 import { ProductsTab } from "./tabs/ProductsTab";
@@ -15,8 +15,32 @@ const TABS: { id: Tab; label: string; icon: typeof Home }[] = [
   { id: "profile", label: "Profile", icon: User },
 ];
 
+function getInitialTab(): Tab {
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get("tab");
+    if (
+      tabParam === "chat" ||
+      tabParam === "home" ||
+      tabParam === "products" ||
+      tabParam === "profile"
+    ) {
+      return tabParam as Tab;
+    }
+    const pending = sessionStorage.getItem("acneveda_pending_tab");
+    if (pending === "chat") return "chat";
+  }
+  return "home";
+}
+
 export function MainAppPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("home");
+  const [activeTab, setActiveTab] = useState<Tab>(getInitialTab);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("acneveda_pending_tab");
+    }
+  }, []);
 
   const renderTab = () => {
     switch (activeTab) {
@@ -36,11 +60,10 @@ export function MainAppPage() {
       className="flex flex-col min-h-screen relative mx-auto"
       style={{
         maxWidth: "430px",
-        background: "#F0F7FF",
-        fontFamily: "'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif",
+        background: "oklch(0.97 0.012 80)",
+        fontFamily: "'DM Sans', system-ui, sans-serif",
       }}
     >
-      {/* Main content area */}
       <div
         className="flex-1 overflow-hidden relative"
         style={{ minHeight: "calc(100vh - 64px)" }}
@@ -64,9 +87,9 @@ export function MainAppPage() {
         className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full"
         style={{
           maxWidth: "430px",
-          background: "#FFFFFF",
-          borderTop: "1px solid #E2E8F0",
-          boxShadow: "0 -4px 16px rgba(0,0,0,0.06)",
+          background: "oklch(1 0 0)",
+          borderTop: "1px solid oklch(0.9 0.02 80)",
+          boxShadow: "0 -4px 16px oklch(0.55 0.14 145 / 0.08)",
           height: "64px",
           zIndex: 50,
         }}
@@ -86,19 +109,28 @@ export function MainAppPage() {
                 <div
                   className="w-9 h-6 rounded-full flex items-center justify-center transition-all"
                   style={{
-                    background: isActive ? "#EFF6FF" : "transparent",
+                    background: isActive
+                      ? "oklch(0.52 0.18 145 / 0.1)"
+                      : "transparent",
                   }}
                 >
                   <Icon
                     className="w-5 h-5 transition-colors"
-                    style={{ color: isActive ? "#3B82F6" : "#94A3B8" }}
+                    style={{
+                      color: isActive
+                        ? "oklch(0.52 0.18 145)"
+                        : "oklch(0.65 0.04 60)",
+                    }}
                   />
                 </div>
                 <span
-                  className="text-xs font-medium transition-colors"
+                  className="font-medium transition-colors"
                   style={{
-                    color: isActive ? "#3B82F6" : "#94A3B8",
+                    color: isActive
+                      ? "oklch(0.52 0.18 145)"
+                      : "oklch(0.65 0.04 60)",
                     fontSize: "10px",
+                    fontFamily: "'DM Sans', system-ui, sans-serif",
                   }}
                 >
                   {tab.label}

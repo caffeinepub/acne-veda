@@ -90,25 +90,100 @@ export class ExternalBlob {
     }
 }
 export type PasswordHash = string;
+export interface ConsultationResult {
+    conditionScore: bigint;
+    flowType: string;
+    reportJson: string;
+    timestamp: bigint;
+    rootCauses: string;
+    doshaImbalance: string;
+    severity: string;
+    primaryConcern: string;
+}
 export interface backendInterface {
-    addAssessmentHistory(username: string): Promise<void>;
+    /**
+     * / Record that a user has completed an assessment.
+     */
+    addAssessmentHistory(username: string): Promise<{
+        __kind__: "ok";
+        ok: null;
+    } | {
+        __kind__: "err";
+        err: string;
+    }>;
+    /**
+     * / Return all consultation results for a user (most recent 20).
+     */
+    getConsultationResults(username: string): Promise<Array<ConsultationResult>>;
+    /**
+     * / Check whether a user has completed at least one assessment.
+     * / Returns false (not an error) for unknown users so new-user flows work.
+     */
     hasHistory(username: string): Promise<boolean>;
-    login(username: string, passwordHash: PasswordHash): Promise<void>;
-    registerUser(username: string, passwordHash: PasswordHash): Promise<void>;
+    /**
+     * / Authenticate a user. Returns ok on success, err on failure.
+     */
+    loginUser(username: string, passwordHash: PasswordHash): Promise<{
+        __kind__: "ok";
+        ok: string;
+    } | {
+        __kind__: "err";
+        err: string;
+    }>;
+    /**
+     * / Register a new user with a hashed password.
+     */
+    registerUser(username: string, passwordHash: PasswordHash): Promise<{
+        __kind__: "ok";
+        ok: string;
+    } | {
+        __kind__: "err";
+        err: string;
+    }>;
+    /**
+     * / Persist a consultation result and mark the user as having history.
+     */
+    saveConsultationResult(username: string, flowType: string, conditionScore: bigint, primaryConcern: string, severity: string, doshaImbalance: string, rootCauses: string, reportJson: string, timestamp: bigint): Promise<{
+        __kind__: "ok";
+        ok: null;
+    } | {
+        __kind__: "err";
+        err: string;
+    }>;
 }
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
-    async addAssessmentHistory(arg0: string): Promise<void> {
+    async addAssessmentHistory(arg0: string): Promise<{
+        __kind__: "ok";
+        ok: null;
+    } | {
+        __kind__: "err";
+        err: string;
+    }> {
         if (this.processError) {
             try {
                 const result = await this.actor.addAssessmentHistory(arg0);
-                return result;
+                return from_candid_variant_n1(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.addAssessmentHistory(arg0);
+            return from_candid_variant_n1(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getConsultationResults(arg0: string): Promise<Array<ConsultationResult>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getConsultationResults(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getConsultationResults(arg0);
             return result;
         }
     }
@@ -126,34 +201,104 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async login(arg0: string, arg1: PasswordHash): Promise<void> {
+    async loginUser(arg0: string, arg1: PasswordHash): Promise<{
+        __kind__: "ok";
+        ok: string;
+    } | {
+        __kind__: "err";
+        err: string;
+    }> {
         if (this.processError) {
             try {
-                const result = await this.actor.login(arg0, arg1);
-                return result;
+                const result = await this.actor.loginUser(arg0, arg1);
+                return from_candid_variant_n2(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.login(arg0, arg1);
-            return result;
+            const result = await this.actor.loginUser(arg0, arg1);
+            return from_candid_variant_n2(this._uploadFile, this._downloadFile, result);
         }
     }
-    async registerUser(arg0: string, arg1: PasswordHash): Promise<void> {
+    async registerUser(arg0: string, arg1: PasswordHash): Promise<{
+        __kind__: "ok";
+        ok: string;
+    } | {
+        __kind__: "err";
+        err: string;
+    }> {
         if (this.processError) {
             try {
                 const result = await this.actor.registerUser(arg0, arg1);
-                return result;
+                return from_candid_variant_n2(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.registerUser(arg0, arg1);
-            return result;
+            return from_candid_variant_n2(this._uploadFile, this._downloadFile, result);
         }
     }
+    async saveConsultationResult(arg0: string, arg1: string, arg2: bigint, arg3: string, arg4: string, arg5: string, arg6: string, arg7: string, arg8: bigint): Promise<{
+        __kind__: "ok";
+        ok: null;
+    } | {
+        __kind__: "err";
+        err: string;
+    }> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.saveConsultationResult(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+                return from_candid_variant_n1(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.saveConsultationResult(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+            return from_candid_variant_n1(this._uploadFile, this._downloadFile, result);
+        }
+    }
+}
+function from_candid_variant_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    ok: null;
+} | {
+    err: string;
+}): {
+    __kind__: "ok";
+    ok: null;
+} | {
+    __kind__: "err";
+    err: string;
+} {
+    return "ok" in value ? {
+        __kind__: "ok",
+        ok: value.ok
+    } : "err" in value ? {
+        __kind__: "err",
+        err: value.err
+    } : value;
+}
+function from_candid_variant_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    ok: string;
+} | {
+    err: string;
+}): {
+    __kind__: "ok";
+    ok: string;
+} | {
+    __kind__: "err";
+    err: string;
+} {
+    return "ok" in value ? {
+        __kind__: "ok",
+        ok: value.ok
+    } : "err" in value ? {
+        __kind__: "err",
+        err: value.err
+    } : value;
 }
 export interface CreateActorOptions {
     agent?: Agent;

@@ -1,39 +1,39 @@
 import { Toaster } from "@/components/ui/sonner";
 import {
-  Link,
   Outlet,
   RouterProvider,
   createRootRoute,
   createRoute,
   createRouter,
 } from "@tanstack/react-router";
-import { ScanLine } from "lucide-react";
 import { MobileFrame } from "./layouts/MobileFrame";
-import { AcneChatPage } from "./pages/AcneChatPage";
 import { AdminPage } from "./pages/AdminPage";
 import { AntiAgeingPage } from "./pages/AntiAgeingPage";
-import { ConsultationPage } from "./pages/ConsultationPage";
-import { DashboardPage } from "./pages/DashboardPage";
+import { ChatPage } from "./pages/ChatPage";
 import { GlowingSkinPage } from "./pages/GlowingSkinPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MainAppPage } from "./pages/MainAppPage";
-import { ScanPage } from "./pages/ScanPage";
 import { SignupPage } from "./pages/SignupPage";
-import { SkinConcernsPage } from "./pages/SkinConcernsPage";
 import { SplashScreen } from "./pages/SplashScreen";
 import { WelcomeScreen } from "./pages/WelcomeScreen";
 import { Step1BasicInfo } from "./pages/assessment/Step1BasicInfo";
-import { Step2Analyzing } from "./pages/assessment/Step2Analyzing";
-import { Step3Chat } from "./pages/assessment/Step3Chat";
 
-// Layout with nav header
-function RootLayout() {
+function NoHeaderLayout() {
+  return (
+    <>
+      <Outlet />
+      <Toaster />
+    </>
+  );
+}
+
+function HeaderLayout() {
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
-          <Link
-            to="/"
+      <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center gap-3">
+          <a
+            href="/"
             className="flex items-center shrink-0"
             data-ocid="nav.home_link"
           >
@@ -42,32 +42,18 @@ function RootLayout() {
               alt="Acne Veda – Clear Skin Naturally"
               className="h-10 sm:h-12 w-auto object-contain max-w-[100px] sm:max-w-[160px]"
             />
-          </Link>
-          <nav className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <Link
-              to="/scan"
-              className="flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm bg-primary text-primary-foreground hover:opacity-90 transition-opacity whitespace-nowrap"
-              data-ocid="nav.scan_tab"
-            >
-              <ScanLine className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-              <span>Analyse Skin</span>
-            </Link>
-          </nav>
+          </a>
+          <span
+            className="text-xs font-medium"
+            style={{ color: "oklch(0.55 0.04 60)" }}
+          >
+            Made by Dr. Akash Hari (BAMS)
+          </span>
         </div>
       </header>
       <Outlet />
       <Toaster />
     </div>
-  );
-}
-
-// Layout without nav header
-function NoHeaderLayout() {
-  return (
-    <>
-      <Outlet />
-      <Toaster />
-    </>
   );
 }
 
@@ -90,42 +76,17 @@ const loginRoute = createRoute({
   path: "/login",
   component: LoginPage,
 });
+
 const signupRoute = createRoute({
   getParentRoute: () => noHeaderRoute,
   path: "/signup",
   component: SignupPage,
-});
-const dashboardRoute = createRoute({
-  getParentRoute: () => noHeaderRoute,
-  path: "/dashboard",
-  component: DashboardPage,
 });
 
 const assessmentStep1Route = createRoute({
   getParentRoute: () => noHeaderRoute,
   path: "/assessment/step1",
   component: Step1BasicInfo,
-});
-const assessmentStep2Route = createRoute({
-  getParentRoute: () => noHeaderRoute,
-  path: "/assessment/step2",
-  component: Step2Analyzing,
-});
-const assessmentStep3Route = createRoute({
-  getParentRoute: () => noHeaderRoute,
-  path: "/assessment/step3",
-  component: Step3Chat,
-});
-
-const skinConcernsRoute = createRoute({
-  getParentRoute: () => noHeaderRoute,
-  path: "/skin-concerns",
-  component: SkinConcernsPage,
-});
-const acneChatRoute = createRoute({
-  getParentRoute: () => noHeaderRoute,
-  path: "/acne-chat",
-  component: AcneChatPage,
 });
 
 const mainAppRoute = createRoute({
@@ -134,11 +95,10 @@ const mainAppRoute = createRoute({
   component: MainAppPage,
 });
 
-// Consultation route — full AI skin & hair consultation flow
-const consultationRoute = createRoute({
+const chatPageRoute = createRoute({
   getParentRoute: () => noHeaderRoute,
-  path: "/consultation",
-  component: ConsultationPage,
+  path: "/chat",
+  component: ChatPage,
 });
 
 const mobileRootRoute = createRoute({
@@ -146,6 +106,7 @@ const mobileRootRoute = createRoute({
   id: "mobile",
   component: MobileFrame,
 });
+
 const welcomeRoute = createRoute({
   getParentRoute: () => mobileRootRoute,
   path: "/welcome",
@@ -155,23 +116,21 @@ const welcomeRoute = createRoute({
 const headerRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "header",
-  component: RootLayout,
+  component: HeaderLayout,
 });
-const scanRoute = createRoute({
-  getParentRoute: () => headerRoute,
-  path: "/scan",
-  component: ScanPage,
-});
+
 const antiAgeingRoute = createRoute({
   getParentRoute: () => headerRoute,
   path: "/anti-ageing",
   component: AntiAgeingPage,
 });
+
 const glowingSkinRoute = createRoute({
   getParentRoute: () => headerRoute,
   path: "/glowing-skin",
   component: GlowingSkinPage,
 });
+
 const adminRoute = createRoute({
   getParentRoute: () => headerRoute,
   path: "/admin",
@@ -183,22 +142,12 @@ const routeTree = rootRoute.addChildren([
     homeRoute,
     loginRoute,
     signupRoute,
-    dashboardRoute,
     assessmentStep1Route,
-    assessmentStep2Route,
-    assessmentStep3Route,
-    skinConcernsRoute,
-    acneChatRoute,
     mainAppRoute,
-    consultationRoute,
+    chatPageRoute,
     mobileRootRoute.addChildren([welcomeRoute]),
   ]),
-  headerRoute.addChildren([
-    scanRoute,
-    antiAgeingRoute,
-    glowingSkinRoute,
-    adminRoute,
-  ]),
+  headerRoute.addChildren([antiAgeingRoute, glowingSkinRoute, adminRoute]),
 ]);
 
 const router = createRouter({ routeTree });

@@ -15,7 +15,10 @@ export function SplashScreen() {
   }, [navigate]);
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen bg-[oklch(0.97_0.012_80)] overflow-hidden">
+    <div
+      className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden"
+      style={{ background: "oklch(0.97 0.012 80)" }}
+    >
       <LeafDecorations opacity={0.22} />
 
       <motion.div
@@ -24,7 +27,6 @@ export function SplashScreen() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
       >
-        {/* Logo */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -46,7 +48,6 @@ export function SplashScreen() {
           </div>
         </motion.div>
 
-        {/* Brand name */}
         <motion.div
           className="text-center"
           initial={{ opacity: 0, y: 12 }}
@@ -72,9 +73,17 @@ export function SplashScreen() {
           >
             Clear Skin Naturally
           </p>
+          <p
+            className="text-xs mt-2"
+            style={{
+              fontFamily: "'DM Sans', system-ui, sans-serif",
+              color: "oklch(0.6 0.04 60)",
+            }}
+          >
+            Made by Dr. Akash Hari (BAMS)
+          </p>
         </motion.div>
 
-        {/* Decorative divider */}
         <motion.div
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: 1, opacity: 1 }}
@@ -116,7 +125,6 @@ export function SplashScreen() {
         </motion.div>
       </motion.div>
 
-      {/* Loading indicator */}
       <motion.div
         className="absolute bottom-12 left-0 right-0 flex justify-center"
         initial={{ opacity: 0 }}

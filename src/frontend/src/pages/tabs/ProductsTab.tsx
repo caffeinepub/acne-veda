@@ -41,20 +41,19 @@ const products = [
   },
 ];
 
+const GREEN = "oklch(0.52 0.18 145)";
+
 export function ProductsTab() {
   const navigate = useNavigate();
 
   return (
     <div
       className="h-full overflow-y-auto pb-20"
-      style={{ background: "#F0F7FF" }}
+      style={{ background: "oklch(0.97 0.012 80)" }}
     >
-      {/* Header */}
       <div
         className="px-4 pt-6 pb-4"
-        style={{
-          background: "linear-gradient(135deg, #EFF6FF 0%, #F0F7FF 100%)",
-        }}
+        style={{ background: "oklch(0.52 0.18 145 / 0.06)" }}
       >
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -62,12 +61,12 @@ export function ProductsTab() {
           transition={{ duration: 0.35 }}
         >
           <div className="flex items-center gap-2 mb-1">
-            <ShoppingBag className="w-5 h-5" style={{ color: "#3B82F6" }} />
+            <ShoppingBag className="w-5 h-5" style={{ color: GREEN }} />
             <h1
               className="text-xl font-bold"
               style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                color: "#1E3A5F",
+                fontFamily: "'Playfair Display', Georgia, serif",
+                color: "oklch(0.22 0.07 140)",
               }}
             >
               Acne Kit
@@ -76,15 +75,14 @@ export function ProductsTab() {
           <p
             className="text-sm"
             style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              color: "#64748B",
+              fontFamily: "'DM Sans', system-ui, sans-serif",
+              color: "oklch(0.52 0.04 60)",
             }}
           >
             Recommended for your skin type
           </p>
         </motion.div>
 
-        {/* Trust badges */}
         <motion.div
           className="flex gap-2 mt-3 flex-wrap"
           initial={{ opacity: 0 }}
@@ -100,9 +98,9 @@ export function ProductsTab() {
               key={badge}
               className="text-xs font-medium px-2.5 py-1 rounded-full"
               style={{
-                background: "#DBEAFE",
-                color: "#1D4ED8",
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                background: "oklch(0.52 0.18 145 / 0.12)",
+                color: "oklch(0.38 0.14 145)",
+                fontFamily: "'DM Sans', system-ui, sans-serif",
               }}
             >
               {badge}
@@ -111,8 +109,22 @@ export function ProductsTab() {
         </motion.div>
       </div>
 
-      {/* Products grid */}
       <div className="px-4 pt-2">
+        {/* Hero image */}
+        <motion.div
+          className="w-full rounded-2xl overflow-hidden mb-4"
+          style={{ height: "140px", border: "1px solid oklch(0.9 0.02 80)" }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <img
+            src="/assets/generated/ayurvedic-products-hero.dim_800x400.jpg"
+            alt="Ayurvedic Skincare Kit"
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
+
         <div className="grid grid-cols-2 gap-3">
           {products.map((product, i) => (
             <motion.div
@@ -123,15 +135,14 @@ export function ProductsTab() {
               transition={{ delay: 0.1 + i * 0.08 }}
               className="rounded-2xl overflow-hidden flex flex-col"
               style={{
-                background: "#FFFFFF",
-                boxShadow: "0 2px 12px rgba(59,130,246,0.08)",
-                border: "1px solid #E2E8F0",
+                background: "oklch(1 0 0)",
+                boxShadow: "0 2px 12px oklch(0.55 0.14 145 / 0.08)",
+                border: "1px solid oklch(0.9 0.02 80)",
               }}
             >
-              {/* Product image */}
               <div
                 className="relative w-full aspect-square"
-                style={{ background: "#F8FAFF" }}
+                style={{ background: "oklch(0.52 0.18 145 / 0.04)" }}
               >
                 <img
                   src={product.img}
@@ -141,32 +152,32 @@ export function ProductsTab() {
                     (e.target as HTMLImageElement).style.display = "none";
                   }}
                 />
-                {/* Rating badge */}
                 <div
                   className="absolute top-2 right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full"
                   style={{ background: "rgba(255,255,255,0.92)" }}
                 >
                   <Star
                     className="w-2.5 h-2.5"
-                    style={{ color: "#F59E0B", fill: "#F59E0B" }}
+                    style={{
+                      color: "oklch(0.65 0.2 70)",
+                      fill: "oklch(0.65 0.2 70)",
+                    }}
                   />
                   <span
                     className="text-xs font-semibold"
-                    style={{ color: "#92400E", fontSize: "10px" }}
+                    style={{ color: "oklch(0.42 0.14 70)", fontSize: "10px" }}
                   >
                     {product.rating}
                   </span>
                 </div>
               </div>
-
-              {/* Product info */}
               <div className="p-3 flex flex-col gap-2 flex-1">
                 <div>
                   <p
                     className="font-semibold text-sm leading-snug"
                     style={{
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      color: "#1E3A5F",
+                      fontFamily: "'DM Sans', system-ui, sans-serif",
+                      color: "oklch(0.22 0.07 140)",
                     }}
                   >
                     {product.name}
@@ -174,23 +185,22 @@ export function ProductsTab() {
                   <p
                     className="text-xs mt-0.5 leading-relaxed"
                     style={{
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      color: "#64748B",
+                      fontFamily: "'DM Sans', system-ui, sans-serif",
+                      color: "oklch(0.55 0.04 60)",
                     }}
                   >
                     {product.benefit}
                   </p>
                 </div>
-
                 <button
                   type="button"
                   data-ocid={`products.item.${i + 1}`}
                   className="mt-auto w-full py-2 rounded-xl text-xs font-semibold transition-all active:scale-95"
                   style={{
-                    background: "#EFF6FF",
-                    color: "#3B82F6",
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    border: "1px solid #BFDBFE",
+                    background: "oklch(0.52 0.18 145 / 0.1)",
+                    color: GREEN,
+                    fontFamily: "'DM Sans', system-ui, sans-serif",
+                    border: "1px solid oklch(0.52 0.18 145 / 0.25)",
                   }}
                 >
                   View Product
@@ -200,7 +210,6 @@ export function ProductsTab() {
           ))}
         </div>
 
-        {/* Full Kit CTA */}
         <motion.div
           className="mt-5 mb-4"
           initial={{ opacity: 0, y: 12 }}
@@ -212,28 +221,26 @@ export function ProductsTab() {
             data-ocid="products.primary_button"
             className="w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
             style={{
-              background: "linear-gradient(135deg, #3B82F6, #6366F1)",
+              background: GREEN,
               color: "#fff",
-              boxShadow: "0 6px 24px rgba(59,130,246,0.35)",
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              boxShadow: "0 6px 24px oklch(0.52 0.18 145 / 0.35)",
+              fontFamily: "'DM Sans', system-ui, sans-serif",
             }}
           >
             <ShoppingBag className="w-4 h-4" />
             Buy Full Kit →
           </button>
-
           <p
             className="text-center text-xs mt-2"
             style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              color: "#94A3B8",
+              fontFamily: "'DM Sans', system-ui, sans-serif",
+              color: "oklch(0.6 0.04 60)",
             }}
           >
             Free shipping on orders above ₹599
           </p>
         </motion.div>
 
-        {/* Retake assessment link */}
         <motion.div
           className="flex justify-center mb-4"
           initial={{ opacity: 0 }}
@@ -245,8 +252,8 @@ export function ProductsTab() {
             data-ocid="products.secondary_button"
             className="text-sm font-medium underline underline-offset-2 transition-opacity hover:opacity-70"
             style={{
-              color: "#3B82F6",
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              color: GREEN,
+              fontFamily: "'DM Sans', system-ui, sans-serif",
             }}
             onClick={() => navigate({ to: "/assessment/step1" })}
           >
@@ -254,15 +261,17 @@ export function ProductsTab() {
           </button>
         </motion.div>
 
-        {/* Footer */}
-        <p className="text-center text-xs pb-4" style={{ color: "#94A3B8" }}>
-          © {new Date().getFullYear()}. Built with ❤️ using{" "}
+        <p
+          className="text-center text-xs pb-4"
+          style={{ color: "oklch(0.6 0.04 60)" }}
+        >
+          &copy; {new Date().getFullYear()}. Built with love using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
             target="_blank"
             rel="noopener noreferrer"
             className="underline"
-            style={{ color: "#3B82F6" }}
+            style={{ color: GREEN }}
           >
             caffeine.ai
           </a>

@@ -6,7 +6,10 @@ export function WelcomeScreen() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative flex flex-col min-h-screen bg-[oklch(0.97_0.012_80)] overflow-hidden">
+    <div
+      className="relative flex flex-col min-h-screen overflow-hidden"
+      style={{ background: "oklch(0.97 0.012 80)" }}
+    >
       <LeafDecorations opacity={0.2} />
 
       <div className="relative z-10 flex flex-col flex-1 px-6 pt-12 pb-8">
@@ -48,10 +51,7 @@ export function WelcomeScreen() {
           >
             Your Skin Deserves{" "}
             <span
-              style={{
-                color: "oklch(0.55 0.14 145)",
-                fontStyle: "italic",
-              }}
+              style={{ color: "oklch(0.55 0.14 145)", fontStyle: "italic" }}
             >
               Natural Care
             </span>
@@ -68,7 +68,7 @@ export function WelcomeScreen() {
           </p>
         </motion.div>
 
-        {/* Decorative botanical illustration */}
+        {/* Botanical illustration */}
         <motion.div
           className="flex justify-center my-6"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -154,7 +154,29 @@ export function WelcomeScreen() {
           </svg>
         </motion.div>
 
-        {/* Spacer */}
+        {/* Trust indicators */}
+        <motion.div
+          className="flex justify-center gap-4 mb-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.25 }}
+        >
+          {["🌿 Ayurvedic", "🩺 AI-Powered", "✅ Free"].map((item) => (
+            <span
+              key={item}
+              className="text-xs font-medium px-3 py-1 rounded-full"
+              style={{
+                background: "oklch(0.52 0.18 145 / 0.1)",
+                color: "oklch(0.38 0.14 145)",
+                border: "1px solid oklch(0.52 0.18 145 / 0.2)",
+                fontFamily: "'DM Sans', system-ui, sans-serif",
+              }}
+            >
+              {item}
+            </span>
+          ))}
+        </motion.div>
+
         <div className="flex-1" />
 
         {/* Buttons */}
@@ -167,23 +189,22 @@ export function WelcomeScreen() {
           <button
             type="button"
             data-ocid="welcome.primary_button"
-            onClick={() => navigate({ to: "/dashboard" })}
+            onClick={() => navigate({ to: "/signup" })}
             className="w-full py-3.5 rounded-full text-white font-semibold text-base transition-all active:scale-[0.98] hover:opacity-90"
             style={{
               fontFamily: "'DM Sans', system-ui, sans-serif",
               background: "oklch(0.65 0.2 35)",
-              boxShadow:
-                "0 4px 20px -2px oklch(0.65 0.2 35 / 0.35), 0 1px 4px -1px oklch(0.65 0.2 35 / 0.2)",
+              boxShadow: "0 4px 20px -2px oklch(0.65 0.2 35 / 0.35)",
             }}
           >
-            Get Started
+            Get Started Free
           </button>
 
           <button
             type="button"
             data-ocid="welcome.secondary_button"
             onClick={() => navigate({ to: "/login" })}
-            className="w-full py-3.5 rounded-full font-semibold text-base transition-all active:scale-[0.98] hover:bg-[oklch(0.55_0.14_145_/_0.06)]"
+            className="w-full py-3.5 rounded-full font-semibold text-base transition-all active:scale-[0.98]"
             style={{
               fontFamily: "'DM Sans', system-ui, sans-serif",
               color: "oklch(0.35 0.1 140)",
@@ -195,7 +216,6 @@ export function WelcomeScreen() {
           </button>
         </motion.div>
 
-        {/* Footer tagline */}
         <motion.p
           className="text-center text-xs"
           style={{
