@@ -236,18 +236,320 @@ export function ChatConsultationPage() {
     const newAnswers = { ...answers, [stepKey]: choice };
     setAnswers(newAnswers);
 
-    // Hair: insert hair-fall-pattern step if "Hair fall" selected
+    // Build enriched steps with disease-specific branching
     const enrichedSteps: ChatMessage[] = [...steps];
+
+    // ── SKIN BRANCHING ──────────────────────────────────────────────────────
+    const skinConcern = newAnswers.skinConcern ?? "";
+
+    if (flow === "skin" && skinConcern.includes("Acne")) {
+      // Insert acne-specific questions after index 0 (skinConcern)
+      const insertAt = 1;
+      if (!enrichedSteps.find((s) => s.key === "acneType")) {
+        enrichedSteps.splice(insertAt, 0, {
+          key: "acneType",
+          question: "What type of acne do you mostly see?",
+          options: [
+            "Whiteheads / Blackheads",
+            "Red painful pimples",
+            "Pus-filled pimples",
+            "Deep cysts / Nodules",
+          ],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "acneLocation")) {
+        enrichedSteps.splice(insertAt + 1, 0, {
+          key: "acneLocation",
+          question: "Where do you mostly get acne?",
+          options: [
+            "Forehead",
+            "Cheeks",
+            "Chin / Jawline",
+            "Nose",
+            "All over face",
+          ],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "acneTriggers")) {
+        enrichedSteps.splice(insertAt + 2, 0, {
+          key: "acneTriggers",
+          question: "Do your breakouts worsen with any of these?",
+          options: [
+            "Stress",
+            "Before periods",
+            "Certain foods",
+            "None of these",
+          ],
+        });
+      }
+    }
+
+    if (
+      flow === "skin" &&
+      (skinConcern.includes("Pigmentation") ||
+        skinConcern.includes("Dark spots"))
+    ) {
+      const insertAt = 1;
+      if (!enrichedSteps.find((s) => s.key === "pigmentationType")) {
+        enrichedSteps.splice(insertAt, 0, {
+          key: "pigmentationType",
+          question: "What type of pigmentation do you have?",
+          options: [
+            "Acne marks / scars",
+            "Large patches on face",
+            "Uneven skin tone",
+            "Not sure",
+          ],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "sunExposure")) {
+        enrichedSteps.splice(insertAt + 1, 0, {
+          key: "sunExposure",
+          question: "How much sun exposure do you get daily?",
+          options: [
+            "Minimal (indoors mostly)",
+            "Moderate (some outdoor time)",
+            "High (outdoors most of the day)",
+          ],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "sunscreen")) {
+        enrichedSteps.splice(insertAt + 2, 0, {
+          key: "sunscreen",
+          question: "Do you use sunscreen regularly?",
+          options: ["Yes, daily", "Sometimes", "Rarely / Never"],
+        });
+      }
+    }
+
+    if (flow === "skin" && skinConcern.includes("Dark circles")) {
+      const insertAt = 1;
+      if (!enrichedSteps.find((s) => s.key === "darkCircleType")) {
+        enrichedSteps.splice(insertAt, 0, {
+          key: "darkCircleType",
+          question: "How would you describe your dark circles?",
+          options: [
+            "Dark / Pigmented",
+            "Hollow / Sunken",
+            "Puffy / Swollen",
+            "All of these",
+          ],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "screenTime")) {
+        enrichedSteps.splice(insertAt + 1, 0, {
+          key: "screenTime",
+          question: "How many hours do you spend on screens daily?",
+          options: ["Less than 2 hours", "2–5 hours", "More than 5 hours"],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "familyHistory")) {
+        enrichedSteps.splice(insertAt + 2, 0, {
+          key: "familyHistory",
+          question: "Do any family members have dark circles too?",
+          options: ["Yes", "No", "Not sure"],
+        });
+      }
+    }
+
+    if (
+      flow === "skin" &&
+      (skinConcern.includes("Wrinkles") || skinConcern.includes("Ageing"))
+    ) {
+      const insertAt = 1;
+      if (!enrichedSteps.find((s) => s.key === "ageingType")) {
+        enrichedSteps.splice(insertAt, 0, {
+          key: "ageingType",
+          question: "What signs of ageing concern you most?",
+          options: [
+            "Fine lines",
+            "Deep wrinkles",
+            "Sagging / Loose skin",
+            "All of these",
+          ],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "sunExposure")) {
+        enrichedSteps.splice(insertAt + 1, 0, {
+          key: "sunExposure",
+          question: "How much sun exposure do you get daily?",
+          options: [
+            "Minimal (indoors mostly)",
+            "Moderate (some outdoor time)",
+            "High (outdoors most of the day)",
+          ],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "sunscreen")) {
+        enrichedSteps.splice(insertAt + 2, 0, {
+          key: "sunscreen",
+          question: "Do you use sunscreen regularly?",
+          options: ["Yes, daily", "Sometimes", "Rarely / Never"],
+        });
+      }
+    }
+
+    // ── HAIR BRANCHING ──────────────────────────────────────────────────────
+    const hairConcern = newAnswers.hairConcern ?? "";
+
+    if (flow === "hair" && hairConcern.includes("Hair fall")) {
+      // Existing hairFallPattern step
+      if (!enrichedSteps.find((s) => s.key === "hairFallPattern")) {
+        enrichedSteps.splice(3, 0, {
+          key: "hairFallPattern",
+          question: "What is your hair fall pattern?",
+          options: ["Sudden", "Gradual", "Seasonal"],
+        });
+      }
+      // New hair fall specific steps
+      const patternIdx = enrichedSteps.findIndex(
+        (s) => s.key === "hairFallPattern",
+      );
+      const afterPattern = patternIdx >= 0 ? patternIdx + 1 : 2;
+      if (!enrichedSteps.find((s) => s.key === "hairFallDuration")) {
+        enrichedSteps.splice(afterPattern, 0, {
+          key: "hairFallDuration",
+          question: "How long have you been experiencing hair fall?",
+          options: [
+            "Less than 1 month",
+            "1–3 months",
+            "3–6 months",
+            "More than 6 months",
+          ],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "hairFallOnset")) {
+        enrichedSteps.splice(afterPattern + 1, 0, {
+          key: "hairFallOnset",
+          question: "How did the hair fall begin?",
+          options: [
+            "Suddenly (within weeks)",
+            "Gradually over months",
+            "After illness or stress",
+            "Always had it",
+          ],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "hairFallDandruff")) {
+        enrichedSteps.splice(afterPattern + 2, 0, {
+          key: "hairFallDandruff",
+          question: "Do you also have dandruff along with hair fall?",
+          options: ["Yes, severe dandruff", "Yes, mild flaking", "No dandruff"],
+        });
+      }
+    }
+
+    if (flow === "hair" && hairConcern.includes("Dandruff")) {
+      const insertAt = 1;
+      if (!enrichedSteps.find((s) => s.key === "dandruffType")) {
+        enrichedSteps.splice(insertAt, 0, {
+          key: "dandruffType",
+          question: "What does your dandruff look like?",
+          options: [
+            "Small dry white flakes",
+            "Large oily yellowish flakes",
+            "Both types",
+            "Not sure",
+          ],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "scalpItching")) {
+        enrichedSteps.splice(insertAt + 1, 0, {
+          key: "scalpItching",
+          question: "Do you experience scalp itching?",
+          options: ["Yes, frequently", "Sometimes", "Rarely"],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "scalpRedness")) {
+        enrichedSteps.splice(insertAt + 2, 0, {
+          key: "scalpRedness",
+          question: "Is there any redness on your scalp?",
+          options: ["Yes", "No", "Not sure"],
+        });
+      }
+    }
+
+    if (flow === "hair" && hairConcern.includes("Thinning")) {
+      const insertAt = 1;
+      if (!enrichedSteps.find((s) => s.key === "thinningPattern")) {
+        enrichedSteps.splice(insertAt, 0, {
+          key: "thinningPattern",
+          question: "Where is the thinning most noticeable?",
+          options: [
+            "Front / Hairline",
+            "Crown / Top of head",
+            "All over",
+            "Temples",
+          ],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "familyHairHistory")) {
+        enrichedSteps.splice(insertAt + 1, 0, {
+          key: "familyHairHistory",
+          question: "Does hair thinning run in your family?",
+          options: [
+            "Yes (father or grandfather)",
+            "Yes (mother's side)",
+            "No family history",
+            "Not sure",
+          ],
+        });
+      }
+    }
+
     if (
       flow === "hair" &&
-      newAnswers.hairConcern === "Hair fall" &&
-      !enrichedSteps.find((s) => s.key === "hairFallPattern")
+      (hairConcern.includes("Dry") ||
+        hairConcern.toLowerCase().includes("frizzy"))
     ) {
-      enrichedSteps.splice(3, 0, {
-        key: "hairFallPattern",
-        question: "What is your hair fall pattern?",
-        options: ["Sudden", "Gradual", "Seasonal"],
-      });
+      const insertAt = 1;
+      if (!enrichedSteps.find((s) => s.key === "heatStyling")) {
+        enrichedSteps.splice(insertAt, 0, {
+          key: "heatStyling",
+          question: "How often do you use heat styling tools?",
+          options: ["Daily", "A few times a week", "Rarely / Never"],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "conditioning")) {
+        enrichedSteps.splice(insertAt + 1, 0, {
+          key: "conditioning",
+          question: "Do you use a conditioner after shampooing?",
+          options: ["Yes, always", "Sometimes", "Never"],
+        });
+      }
+    }
+
+    if (
+      flow === "hair" &&
+      (hairConcern.includes("Greying") ||
+        hairConcern.toLowerCase().includes("greying"))
+    ) {
+      const insertAt = 1;
+      if (!enrichedSteps.find((s) => s.key === "greyingAge")) {
+        enrichedSteps.splice(insertAt, 0, {
+          key: "greyingAge",
+          question: "At what age did you first notice greying?",
+          options: ["Before 20", "20–25 years", "25–30 years", "After 30"],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "greyingProgression")) {
+        enrichedSteps.splice(insertAt + 1, 0, {
+          key: "greyingProgression",
+          question: "How fast is the greying spreading?",
+          options: [
+            "Very fast (within months)",
+            "Gradual (over years)",
+            "Stable (not spreading much)",
+          ],
+        });
+      }
+      if (!enrichedSteps.find((s) => s.key === "greyingFamily")) {
+        enrichedSteps.splice(insertAt + 2, 0, {
+          key: "greyingFamily",
+          question: "Does premature greying run in your family?",
+          options: ["Yes", "No", "Not sure"],
+        });
+      }
     }
 
     const nextIndex = stepIndex + 1;

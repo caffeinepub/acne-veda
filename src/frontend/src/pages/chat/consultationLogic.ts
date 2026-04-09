@@ -8,9 +8,57 @@ export interface ChatMessage {
   options: string[];
 }
 
-export interface ConsultationAnswers {
-  [key: string]: string;
-}
+export type ConsultationAnswers = Record<string, string | undefined> & {
+  // Skin — generic
+  skinConcern?: string;
+  severity?: string;
+  skinType?: string;
+  sleep?: string;
+  stress?: string;
+  hydration?: string;
+  digestion?: string;
+  diet?: string;
+  routine?: string;
+  // Skin — acne specific
+  acneType?: string;
+  acneLocation?: string;
+  acneTriggers?: string;
+  // Skin — pigmentation specific
+  pigmentationType?: string;
+  sunExposure?: string;
+  sunscreen?: string;
+  // Skin — dark circles specific
+  darkCircleType?: string;
+  screenTime?: string;
+  familyHistory?: string;
+  // Skin — ageing specific
+  ageingType?: string;
+  // Hair — generic
+  hairConcern?: string;
+  scalpType?: string;
+  protein?: string;
+  oiling?: string;
+  washing?: string;
+  // Hair — hair fall specific
+  hairFallPattern?: string;
+  hairFallDuration?: string;
+  hairFallOnset?: string;
+  hairFallDandruff?: string;
+  // Hair — dandruff specific
+  dandruffType?: string;
+  scalpItching?: string;
+  scalpRedness?: string;
+  // Hair — thinning specific
+  thinningPattern?: string;
+  familyHairHistory?: string;
+  // Hair — dry/frizzy specific
+  heatStyling?: string;
+  conditioning?: string;
+  // Hair — greying specific
+  greyingAge?: string;
+  greyingProgression?: string;
+  greyingFamily?: string;
+};
 
 export interface ScanResult {
   whiteheads: number;
@@ -100,6 +148,94 @@ function mapDosha(
   };
 }
 
+export function classifyCondition(
+  answers: ConsultationAnswers,
+  flow: FlowType,
+): string {
+  if (flow === "skin") {
+    const concern = answers.skinConcern || "";
+    if (concern.includes("Acne")) {
+      const type = answers.acneType || "";
+      if (type.includes("Whiteheads") || type.includes("Blackheads"))
+        return "comedonal acne";
+      if (type.includes("Red painful")) return "papular acne";
+      if (type.includes("Pus-filled")) return "pustular acne";
+      if (type.includes("Deep cysts")) return "nodulocystic acne";
+      return "acne";
+    }
+    if (concern.includes("Pigmentation") || concern.includes("Dark spots")) {
+      const pigType = answers.pigmentationType || "";
+      const sun = answers.sunExposure || "";
+      if (sun.includes("High")) return "sun-induced pigmentation";
+      if (pigType.includes("patches")) return "melasma";
+      if (pigType.includes("Acne marks"))
+        return "post-inflammatory hyperpigmentation";
+      return "uneven skin tone";
+    }
+    if (concern.includes("Dark circles")) {
+      const dcType = answers.darkCircleType || "";
+      if (dcType.includes("Dark / Pigmented")) return "pigmented dark circles";
+      if (dcType.includes("Hollow")) return "hollow dark circles";
+      if (dcType.includes("Puffy")) return "vascular dark circles";
+      return "dark circles";
+    }
+    if (concern.includes("Wrinkles") || concern.includes("Ageing")) {
+      const ageType = answers.ageingType || "";
+      if (ageType.includes("Fine lines")) return "fine lines";
+      if (ageType.includes("Deep wrinkles")) return "static wrinkles";
+      if (ageType.includes("Sagging")) return "skin laxity";
+      return "skin ageing";
+    }
+    return "";
+  }
+
+  // hair flow
+  const concern = answers.hairConcern || "";
+  if (concern.includes("Hair fall")) {
+    const onset = answers.hairFallOnset || "";
+    const dandruff = answers.hairFallDandruff || "";
+    const family = answers.familyHairHistory || "";
+    if (dandruff.includes("Yes")) return "hair fall with dandruff";
+    if (onset.includes("Suddenly") || onset.includes("After illness"))
+      return "telogen effluvium";
+    if (onset.includes("Gradually") && family.includes("Yes"))
+      return "androgenetic hair loss";
+    return "hair fall";
+  }
+  if (concern.includes("Dandruff")) {
+    const dtype = answers.dandruffType || "";
+    if (dtype.toLowerCase().includes("dry white")) return "dry dandruff";
+    if (dtype.toLowerCase().includes("oily yellowish")) return "oily dandruff";
+    return "dandruff";
+  }
+  if (concern.includes("Thinning")) {
+    const pattern = answers.thinningPattern || "";
+    const family = answers.familyHairHistory || "";
+    if (family.includes("Yes")) return "early androgenetic thinning";
+    if (pattern === "All over") return "diffuse thinning";
+    return "hair thinning";
+  }
+  if (concern.includes("Dry") || concern.toLowerCase().includes("frizzy")) {
+    const heat = answers.heatStyling || "";
+    const cond = answers.conditioning || "";
+    if (heat === "Daily" || cond === "Never") return "frizzy hair";
+    return "dry hair";
+  }
+  if (
+    concern.includes("Greying") ||
+    concern.toLowerCase().includes("greying")
+  ) {
+    const age = answers.greyingAge || "";
+    const family = answers.greyingFamily || "";
+    if (age.includes("Before 20") || age.includes("20–25")) {
+      if (family === "Yes") return "genetic premature greying";
+      return "stress/nutritional premature greying";
+    }
+    return "premature greying";
+  }
+  return "";
+}
+
 function buildRootCauses(
   answers: ConsultationAnswers,
   flow: FlowType,
@@ -127,6 +263,30 @@ function buildRootCauses(
     causes.push("Insufficient protein intake weakens hair shaft structure");
   if (flow === "hair" && answers.oiling === "Never")
     causes.push("Lack of scalp oiling leads to dryness and follicle weakness");
+
+  // Condition-specific root causes
+  if (answers.acneTriggers?.includes("Before periods"))
+    causes.push("Hormonal fluctuations (likely pre-menstrual)");
+  if (answers.acneTriggers?.includes("Certain foods"))
+    causes.push("Dietary triggers worsening inflammation");
+  if (
+    answers.sunExposure === "High (outdoors most of the day)" &&
+    (answers.skinConcern?.includes("Pigmentation") ||
+      answers.skinConcern?.includes("Wrinkles") ||
+      answers.skinConcern?.includes("Ageing"))
+  )
+    causes.push("Excessive UV exposure accelerating skin damage");
+  if (answers.sunscreen === "Rarely / Never")
+    causes.push("Lack of sun protection worsening pigmentation and ageing");
+  if (answers.screenTime === "More than 5 hours")
+    causes.push("High screen time causing eye strain and periorbital stress");
+  if (answers.hairFallOnset?.includes("After illness"))
+    causes.push("Post-illness recovery affecting the hair growth cycle");
+  if (answers.greyingAge?.includes("Before 20"))
+    causes.push(
+      "Possible nutritional deficiency or genetic predisposition to early greying",
+    );
+
   if (causes.length < 3)
     causes.push(
       "Environmental exposure (pollution, UV, hard water) causing oxidative stress",
@@ -286,13 +446,25 @@ export function buildResults(
     flow === "skin" ? buildSkinRoutine(answers) : buildHairRoutine(answers);
   const { avoid, include } = buildDiet(answers, flow, dosha);
 
+  const classification = classifyCondition(answers, flow);
+
   const scanNote = scanResult
     ? ` AI scan detected ${scanResult.dominant} as dominant acne type.`
     : "";
-  const diagnosis =
-    flow === "skin"
-      ? `You have ${severity.toLowerCase()} ${primaryConcern.toLowerCase()} with ${dosha} dosha imbalance.${scanNote} Ayurvedic intervention combined with a targeted skincare routine can resolve this in 6–12 weeks.`
-      : `You have ${severity.toLowerCase()} ${primaryConcern.toLowerCase()} linked to ${dosha} imbalance. A consistent hair care regimen and dietary changes will show visible improvement in 8–10 weeks.`;
+
+  let diagnosis: string;
+  if (classification) {
+    const rootCauseSummary =
+      rootCauses.length > 0
+        ? rootCauses[0].toLowerCase()
+        : `${dosha} dosha imbalance`;
+    diagnosis = `Based on your responses, your condition appears to be ${classification}. This suggests ${rootCauseSummary}.${scanNote} The severity appears ${severity.toLowerCase()} based on your assessment. Ayurvedic intervention combined with a targeted routine can show visible improvement in 6–12 weeks.`;
+  } else {
+    diagnosis =
+      flow === "skin"
+        ? `You have ${severity.toLowerCase()} ${primaryConcern.toLowerCase()} with ${dosha} dosha imbalance.${scanNote} Ayurvedic intervention combined with a targeted skincare routine can resolve this in 6–12 weeks.`
+        : `You have ${severity.toLowerCase()} ${primaryConcern.toLowerCase()} linked to ${dosha} imbalance. A consistent hair care regimen and dietary changes will show visible improvement in 8–10 weeks.`;
+  }
 
   const lifestyleTips = [
     answers.sleep === "Less than 5 hours"

@@ -1,4 +1,4 @@
-// Version: 3.0.0
+// Version: 1.0.0
 type ConsultationResult__125881192 =
   {
     conditionScore : Nat;
@@ -15,33 +15,13 @@ type Data__791452850<K, V> =
 type Internal__8484328<K, V> =
   {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
 type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
-type Map__158565046<K, V> = Map__297112838<K, V>;
-type Map__297112838<K, V> =
-  {var root : Node__46230540<K, V>; var size : Nat__490723111};
-type Map__605269027<K, V> = Map__158565046<K, V>;
 type Nat__490723111 = Nat__920180692;
 type Nat__920180692 = Nat;
 type Node__46230540<K, V> =
   {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
-type OldConsultationResult__27653598 =
-  {
-    conditionScore : Nat;
-    doshaImbalance : Text;
-    flowType : Text;
-    primaryConcern : Text;
-    reportJson : Text;
-    rootCauses : Text;
-    severity : Text;
-    timestamp : Int
-  };
 type PasswordHash__260336738 = Text;
-type User__177735871 = {passwordHash : Text};
 type User__831686142 = {passwordHash : PasswordHash__260336738};
-actor ({
-  in consultations : Map__605269027<Text, [OldConsultationResult__27653598]>;
-  in history : Map__605269027<Text, Bool>;
-  in users : Map__605269027<Text, User__177735871>
-}, {
+actor {
   stable consultations :
     {
       var root : Node__46230540<Text, [ConsultationResult__125881192]>;
@@ -54,4 +34,4 @@ actor ({
       var root : Node__46230540<Text, User__831686142>;
       var size : Nat__490723111
     }
-}) ;
+};
